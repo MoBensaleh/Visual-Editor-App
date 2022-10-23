@@ -59,6 +59,9 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
         buttons.get(0).setSelected(true);
         VBox.setMargin(buttons.get(0),new Insets(0,0,0,0));
         buttons.get(0).setPadding(new Insets(8,5,8,5));
+        buttons.get(0).getGraphic().setScaleX(1.2);
+        buttons.get(0).getGraphic().setScaleY(1.2);
+
 
 
         // make sure there is always a button selected
@@ -112,10 +115,14 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
         for (ToggleButton b : buttons) {
             VBox.setMargin(b, new Insets(0,5,0,5));
             b.setPadding(new Insets(5,5,5,5));
+            b.getGraphic().setScaleX(1);
+            b.getGraphic().setScaleY(1);
         }
 
         VBox.setMargin(((ToggleButton) toggles.getSelectedToggle()), new Insets(0,0,0,0));
         ((ToggleButton) toggles.getSelectedToggle()).setPadding(new Insets(8,5,8,5));
+        ((ToggleButton) toggles.getSelectedToggle()).getGraphic().setScaleX(1.2);
+        ((ToggleButton) toggles.getSelectedToggle()).getGraphic().setScaleY(1.2);
     }
 }
 

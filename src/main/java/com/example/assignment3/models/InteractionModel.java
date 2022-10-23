@@ -1,7 +1,5 @@
 package com.example.assignment3.models;
 
-import javafx.scene.paint.Color;
-
 import java.util.ArrayList;
 
 /**
