@@ -25,9 +25,11 @@ public class EditorApp extends Application {
 
         // Set up MVC
         mainUI.setInteractionModel(iModel);
+        mainUI.setModel(model);
         mainUI.setController(controller);
 
         controller.setInteractionModel(iModel);
+        controller.setModel(model);
 
         iModel.addSub(mainUI);
 

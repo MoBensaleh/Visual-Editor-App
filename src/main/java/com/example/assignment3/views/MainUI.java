@@ -20,7 +20,20 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     public MainUI() {
         // create the toolbar and canvas views to store
         toolPalette = new ToolPalette();
+        diagramView = new DiagramView(800, 800);
+
         this.setLeft(toolPalette);
+        this.setRight(diagramView);
+
+        // make the canvas view resize based on the main application
+        this.widthProperty().addListener((observable, oldValue, newValue) -> {
+            diagramView.setMaxWidth(newValue.doubleValue()-toolPalette.getWidth());
+            diagramView.setPrefWidth(newValue.doubleValue()-toolPalette.getWidth());
+        });
+        this.heightProperty().addListener((observable, oldValue, newValue) -> {
+            diagramView.setMaxHeight(newValue.doubleValue());
+            diagramView.setPrefHeight(newValue.doubleValue());
+        });
         this.setPrefSize(800, 800);
     }
 
@@ -31,15 +44,27 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     public void setInteractionModel(InteractionModel newIModel) {
         iModel = newIModel;
         toolPalette.setInteractionModel(newIModel);
+        diagramView.setInteractionModel(newIModel);
         iModel.addSub(toolPalette);
+        iModel.addSub(diagramView);
     }
 
+    /**
+     * Associate a model to the view
+     * @param newModel the drawing model information
+     */
+    public void setModel(SMModel newModel) {
+        model = newModel;
+        diagramView.setModel(newModel);
+        model.addSub(diagramView);
+    }
     /**
      * Set a controller for the view
      * @param newController the controller
      */
     public void setController(AppController newController) {
         toolPalette.setController(newController);
+        diagramView.setController(newController);
     }
 
 

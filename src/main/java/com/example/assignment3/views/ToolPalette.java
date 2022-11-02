@@ -58,7 +58,7 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
         // set the first pointer button as selection default
         buttons.get(0).setSelected(true);
         VBox.setMargin(buttons.get(0),new Insets(0,0,0,0));
-        buttons.get(0).setPadding(new Insets(8,5,8,5));
+        buttons.get(0).setPadding(new Insets(9,6,9,6));
         buttons.get(0).getGraphic().setScaleX(1.2);
         buttons.get(0).getGraphic().setScaleY(1.2);
 
@@ -73,7 +73,7 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
 
         // make buttons visible
         this.getChildren().addAll(cursorBar);
-        this.setPrefSize(62, 800);
+        this.setPrefSize(70, 800);
     }
 
     /**
@@ -120,7 +120,7 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
         }
 
         VBox.setMargin(((ToggleButton) toggles.getSelectedToggle()), new Insets(0,0,0,0));
-        ((ToggleButton) toggles.getSelectedToggle()).setPadding(new Insets(8,5,8,5));
+        ((ToggleButton) toggles.getSelectedToggle()).setPadding(new Insets(9,6,9,6));
         ((ToggleButton) toggles.getSelectedToggle()).getGraphic().setScaleX(1.2);
         ((ToggleButton) toggles.getSelectedToggle()).getGraphic().setScaleY(1.2);
     }
