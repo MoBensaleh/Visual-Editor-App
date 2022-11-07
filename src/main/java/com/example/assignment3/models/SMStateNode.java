@@ -1,9 +1,21 @@
 package com.example.assignment3.models;
 
+import java.util.ArrayList;
+
 public class SMStateNode {
     private String nodeText;
     public double x, y, width, height, initialX, initialY;
     private int z;
+
+    private ArrayList<SMTransitionLink> transitionLinks;
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
 
     /**
      * Constructor for XShape
@@ -19,8 +31,10 @@ public class SMStateNode {
         height = newHeight;
         initialX = newX;
         initialY = newY;
+        transitionLinks = new ArrayList<>();
         double handleX = x + width;
         double handleY = y + height;
+
     }
 
 
@@ -63,6 +77,14 @@ public class SMStateNode {
         initialY = y;
     }
 
+    public void addTransitionLink(SMTransitionLink transitionLink){
+        transitionLinks.add(transitionLink);
+    }
+
+    public ArrayList<SMTransitionLink> getTransitionLinks() {
+        return transitionLinks;
+    }
+
     /**
      * Set the z value of the state node
      * @param newZ the z value
@@ -77,5 +99,21 @@ public class SMStateNode {
      */
     public int getZ() {
         return z;
+    }
+
+    /**
+     * Get the x value of the state node
+     * @return the x value
+     */
+    public double getX() {
+        return x;
+    }
+
+    /**
+     * Get the y value of the state node
+     * @return the y value
+     */
+    public double getY() {
+        return y;
     }
 }

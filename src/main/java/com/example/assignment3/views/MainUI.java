@@ -5,6 +5,7 @@ import com.example.assignment3.models.IModelSubscriber;
 import com.example.assignment3.models.InteractionModel;
 import com.example.assignment3.models.ModelSubscriber;
 import com.example.assignment3.models.SMModel;
+import javafx.scene.Cursor;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -74,6 +75,17 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
 
     @Override
     public void iModelUpdated() {
+        switch (iModel.getSelectedCursor()){
+            case "pointer" -> {
+                this.getScene().setCursor(Cursor.DEFAULT);
+            }
+            case "link" -> {
+                this.getScene().setCursor(Cursor.CROSSHAIR);
+            }
+            case "move" -> {
+                this.getScene().setCursor(Cursor.MOVE);
+            }
+        }
 
     }
 }

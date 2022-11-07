@@ -9,6 +9,7 @@ import java.util.Comparator;
 public class SMModel {
     private ArrayList<ModelSubscriber> subs;
     private ArrayList<SMStateNode> stateNodes;
+    private ArrayList<SMTransitionLink> transitionLinks;
     private int nextZ;
 
     /**
@@ -17,6 +18,7 @@ public class SMModel {
     public SMModel() {
         subs = new ArrayList<>();
         stateNodes = new ArrayList<>();
+        transitionLinks = new ArrayList<>();
         nextZ = 0;
     }
 
@@ -37,16 +39,26 @@ public class SMModel {
     }
 
     /**
-     * Get the list of shapes to be drawn
+     * Get the list of state nodes to be drawn
      *
-     * @return list of shapes
+     * @return list of state nodes
      */
     public ArrayList<SMStateNode> getStateNodes() {
         return stateNodes;
     }
 
     /**
-     * Create a shape given a colour and shape tool
+     * Get the list of transition links to be drawn
+     *
+     * @return list of transition links
+     */
+    public ArrayList<SMTransitionLink> getTransitionLinks() {
+        return transitionLinks;
+    }
+
+
+    /**
+     * Create a state node given position coordinates
      *
      * @param normX            normalized x coordinate
      * @param normY            normalized y coordinate
@@ -62,6 +74,45 @@ public class SMModel {
         return stateNode;
     }
 
+    /**
+     * Create a transition link given position coordinates and a start and end state node.
+     *
+     * @param normX1 starting x coordinate
+     * @param normY1 starting y coordinate
+     * @param startNode start state node
+     *
+     */
+    public SMTransitionLink createTransitionLink(double normX1, double normY1, double normX2, double normY2, SMStateNode startNode) {
+        SMTransitionLink smTransitionLink;
+        smTransitionLink = new SMTransitionLink(normX1, normY1, normX2, normY2, startNode, startNode);
+        setLinkZOrdering(smTransitionLink);
+        startNode.addTransitionLink(smTransitionLink);
+        transitionLinks.add(smTransitionLink);
+        notifySubscribers();
+        return smTransitionLink;
+    }
+
+    /**
+     * Resize transition link end coordinates (dragging action)
+     * @param transitionLink transition link
+     * @param normX new location for x2 (end)
+     * @param normY new location for y2 (end)
+     */
+    public void resizeTransitionLinkEnd(SMTransitionLink transitionLink, double normX, double normY) {
+        transitionLink.resizeEnd(normX, normY);
+        notifySubscribers();
+    }
+
+    /**
+     * Resize transition link start coordinates (dragging action)
+     * @param transitionLink transition link
+     * @param normX new location for x2 (end)
+     * @param normY new location for y2 (end)
+     */
+    public void resizeTransitionLinkStart(SMTransitionLink transitionLink, double normX, double normY) {
+        transitionLink.resizeStart(normX, normY);
+        notifySubscribers();
+    }
 
     /**
      * Check if any state node was hit
@@ -108,8 +159,18 @@ public class SMModel {
      *
      * @param selectedStateNode state node to be deleted
      */
-    public void deleteSelected(SMStateNode selectedStateNode) {
+    public void deleteSelectedStateNode(SMStateNode selectedStateNode) {
         stateNodes.remove(selectedStateNode);
+        notifySubscribers();
+    }
+
+    /**
+     * Delete the transition link
+     *
+     * @param transitionLink transition link to be deleted
+     */
+    public void deleteTransitionLink(SMTransitionLink transitionLink) {
+        transitionLinks.remove(transitionLink);
         notifySubscribers();
     }
 
@@ -122,6 +183,18 @@ public class SMModel {
         stateNode.setZ(nextZ);
         nextZ++;
         stateNodes.sort(Comparator.comparingInt(SMStateNode::getZ));
+        notifySubscribers();
+    }
+
+    /**
+     * Set the Z value of a transition link
+     *
+     * @param transitionLink the transition link who's Z value needs to be set
+     */
+    public void setLinkZOrdering(SMTransitionLink transitionLink) {
+        transitionLink.setZ(nextZ);
+        nextZ++;
+        transitionLinks.sort(Comparator.comparingInt(SMTransitionLink::getZ));
         notifySubscribers();
     }
 

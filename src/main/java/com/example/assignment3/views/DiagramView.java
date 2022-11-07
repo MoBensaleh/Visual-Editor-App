@@ -2,10 +2,12 @@ package com.example.assignment3.views;
 
 import com.example.assignment3.controllers.AppController;
 import com.example.assignment3.models.*;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 /**
  * A view that contains a canvas to show the
@@ -49,8 +51,21 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
             gc.setFill(Color.YELLOW);
             gc.fillRect(node.x, node.y,
                     node.width, node.height);
-            gc.strokeRect(node.x, node.y ,
+            gc.strokeRect(node.x, node.y,
                     node.width, node.height);
+            gc.setTextAlign(TextAlignment.CENTER);
+            gc.setTextBaseline(VPos.CENTER);
+            gc.setFill(Color.BLACK);
+            gc.fillText(node.getNodeText(), node.x + (node.width / 2), node.y + (node.height / 2));
+
+        }
+
+        for (SMTransitionLink link : model.getTransitionLinks()) {
+            gc.setStroke(Color.BLACK);
+            gc.setLineWidth(2.0);
+            gc.strokeLine(link.x, link.y,
+                    link.x2, link.y2);
+
 
         }
     }

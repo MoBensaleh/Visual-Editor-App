@@ -42,6 +42,7 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
             iconImg.setFitHeight(40);
             iconImg.setFitWidth(40);
             ToggleButton button = new ToggleButton("", iconImg);
+            button.setId(name);
             VBox.setMargin(button, new Insets(0,5,0,5));
             button.setToggleGroup(toggles);
             button.setBackground(new Background(new BackgroundFill(Color.rgb(34, 159, 152), new CornerRadii(10), null)));
@@ -100,10 +101,9 @@ public class ToolPalette extends StackPane implements IModelSubscriber {
      * @param newController the controller
      */
     public void setController(AppController newController) {
-        // set the border of the selected button
         for (ToggleButton button : buttons) {
             button.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                newController.handleSelectedCursor(button.getText());
+                newController.handleSelectedCursor(button.getId());
             });
         }
     }
