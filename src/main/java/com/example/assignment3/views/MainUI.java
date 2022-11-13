@@ -15,27 +15,32 @@ import javafx.scene.layout.BorderPane;
 public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscriber {
     private ToolPalette toolPalette;
     private DiagramView diagramView;
+    private NodePropertiesView nodePropertiesView;
     private SMModel model;
     private InteractionModel iModel;
 
     public MainUI() {
         // create the toolbar and canvas views to store
         toolPalette = new ToolPalette();
-        diagramView = new DiagramView(800, 800);
+        diagramView = new DiagramView(1600, 1600);
+        nodePropertiesView = new NodePropertiesView();
+        diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-nodePropertiesView.getWidth());
 
         this.setLeft(toolPalette);
-        this.setRight(diagramView);
+        this.setCenter(diagramView);
+        this.setRight(nodePropertiesView);
 
         // make the canvas view resize based on the main application
         this.widthProperty().addListener((observable, oldValue, newValue) -> {
-            diagramView.setMaxWidth(newValue.doubleValue()-toolPalette.getWidth());
-            diagramView.setPrefWidth(newValue.doubleValue()-toolPalette.getWidth());
+            diagramView.setMaxWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
+            diagramView.setPrefWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
+
         });
         this.heightProperty().addListener((observable, oldValue, newValue) -> {
             diagramView.setMaxHeight(newValue.doubleValue());
             diagramView.setPrefHeight(newValue.doubleValue());
         });
-        this.setPrefSize(800, 800);
+        this.setPrefSize(1150, 800);
     }
 
     /**
@@ -46,8 +51,10 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         iModel = newIModel;
         toolPalette.setInteractionModel(newIModel);
         diagramView.setInteractionModel(newIModel);
+        nodePropertiesView.setInteractionModel(newIModel);
         iModel.addSub(toolPalette);
         iModel.addSub(diagramView);
+        iModel.addSub(nodePropertiesView);
     }
 
     /**
@@ -66,6 +73,7 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     public void setController(AppController newController) {
         toolPalette.setController(newController);
         diagramView.setController(newController);
+        nodePropertiesView.setController(newController);
     }
 
 

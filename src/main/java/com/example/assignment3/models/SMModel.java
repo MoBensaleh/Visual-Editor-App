@@ -75,57 +75,9 @@ public class SMModel {
         return smItem;
     }
 
-    /**
-     * To figure out the best way to draw a final link between
-     * two nodes that just touches the borders - after mouse release
-     * @param startNode
-     * @param endNode
-     * @return
-     */
-    public double[] bestLink(SMStateNode startNode, SMStateNode endNode){
-
-        double[] values = {0, 0, 0, 0};
-        values[0] = startNode.getX()-(startNode.getWidth()/2);
-        values[1] = startNode.getY()-(startNode.getHeight()/2);
-        values[2] = endNode.getX()-(endNode.getWidth()/2);
-        values[3] = endNode.getY()-(endNode.getHeight()/2);
-
-
-        return values;
-    }
 
     public void makeFinalLink(SMTransitionLink link){
         link.setFinal(true);
-
-//        double[] coords = this.bestLink(link.getStartNode(), link.getEndNode());
-//        System.out.println(coords[0]);
-//
-//        //Set the coords of the transition node, doing some trig:
-//
-//
-//        double distX = link.getWidth()-link.getX();
-//        double distY = link.getHeight()-link.getY();
-//        //Get the length
-//        //System.out.println("\nPoint 1: " + x1  +", " + y1 + "\nPoint 2: " + x2 + ", " + y2);
-//        double length = Math.sqrt(distX * distX  + distY * distY);
-//        //System.out.println(length);
-//        //Get the angle
-//        double angle = Math.atan2(distY, distX);
-//        //System.out.println("\nAngle: " + angle);
-//        //Figuring out triangular stuff for the first link - pointing to the transition node
-//        double hypotenuse1 = length/3.0;
-//        double opposite1 = Math.sin(angle) * hypotenuse1;
-//        double adjacent1 = Math.cos(angle)* hypotenuse1;
-//
-//        //this.nodes.add(link);
-//
-//        //Now we set it:
-//        link.x = coords[0] + adjacent1;
-//        link.y = coords[1] + opposite1;
-//
-//        System.out.println("\nlink.x: " + link.x + "\nlink.y: " + link.y);
-
-
         notifySubscribers();
     }
 

@@ -34,7 +34,7 @@ public class EditorApp extends Application {
         iModel.addSub(mainUI);
 
         // set the stage
-        Scene scene = new Scene(mainUI, 862, 800);
+        Scene scene = new Scene(mainUI, 1150, 800);
         // add event handler for when delete/backspace key is pressed
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) {

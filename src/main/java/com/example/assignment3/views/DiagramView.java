@@ -76,8 +76,6 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
                         drawTransition(gc, (SMTransitionLink) item, false);
 
                     }
-
-
                 }
                 //If it's a temporary link
                 else {
@@ -85,9 +83,7 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
                     gc.strokeLine(item.x, item.y, item.width, item.height);
                 }
             }
-
         }
-
     }
 
     private void drawArrow(GraphicsContext gc, double x1, double y1, double x2, double y2, double width, double height){
@@ -96,19 +92,15 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
         int length = (int) Math.sqrt(dx * dx + dy * dy);
 
         gc.setFill(Color.BLACK);
-
         Pair<Double, Double> nodeEdgeCoordinates = getDistanceFromCenter(arrowAngle, width, height);
-
         Transform arrowTransform = Transform.translate(x1 - nodeEdgeCoordinates.getKey(), y1 - nodeEdgeCoordinates.getValue());
-
         arrowTransform = arrowTransform.createConcatenation(Transform.rotate(Math.toDegrees(arrowAngle), 0, 0));
 
         gc.setTransform(new Affine(arrowTransform));
 
         //Draw the triangle
-        gc.fillPolygon(new double[]{length, length - 8, length - 8}, new double[]{0, -8, 8},
+        gc.fillPolygon(new double[]{length, length - 15, length - 15}, new double[]{0, -6, 6},
                 3);
-
 
         //Now we reset the graphics context's transform so it doesn't mess up future drawings
         gc.setTransform(new Affine(Transform.translate(0, 0)));
