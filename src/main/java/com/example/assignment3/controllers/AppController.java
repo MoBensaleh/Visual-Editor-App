@@ -1,12 +1,8 @@
 package com.example.assignment3.controllers;
 
 
-import com.example.assignment3.models.InteractionModel;
-import com.example.assignment3.models.SMModel;
-import com.example.assignment3.models.SMStateNode;
-import com.example.assignment3.models.SMTransitionLink;
+import com.example.assignment3.models.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 
 /**
  * The controller to handle events from the view classes.
@@ -15,10 +11,12 @@ public class AppController {
     protected SMModel model;
     protected InteractionModel iModel;
     protected double prevX, prevY;
-    protected SMTransitionLink transitionLink;
+    private SMTransitionLink transitionLink;
+    private SMStateNode startNode;
+    private SMStateNode endNode;
 
     protected enum State {
-        READY, PREPARE_CREATE, SELECTED, MOVING
+        READY, PREPARE_CREATE, SELECTED, DRAGGING
     }
 
     protected State currentState;
@@ -62,48 +60,75 @@ public class AppController {
     public void handlePressed(double normX, double normY, MouseEvent event) {
         prevX = normX;
         prevY = normY;
-        switch (currentState) {
-            case READY -> {
-                switch(iModel.getSelectedCursor()){
-                    case "pointer" ->{
+        switch(iModel.getSelectedCursor()){
+            case "pointer" ->{
+                switch (currentState){
+                    case READY -> {
                         if (model.checkHit(normX, normY)) {
-                            SMStateNode node = model.whichStateNode(normX, normY);
-                            iModel.setSelectedStateNode(node);
+                            SMItem item = model.whichItem(normX, normY);
+                            iModel.setSelectedItem(item);
                             currentState = State.SELECTED;
-                        } else {
-                            iModel.setSelectedStateNode(null);
+                        }
+                        else {
+                            iModel.setSelectedItem(null);
                             prevX = normX;
                             prevY = normY;
                             currentState = State.PREPARE_CREATE;
                         }
                     }
 
-                    case "link" ->{
-                        if (model.checkHit(normX, normY)) {
+                    case SELECTED -> {
+                        if (iModel.getSelectedItem() != null) {
+                            boolean onSelectedStateNode = iModel.getSelectedItem().contains(normX, normY);
+                            if (onSelectedStateNode) {
+                                currentState = State.DRAGGING;
+                            } else {
+                                boolean onAnotherStateNode = model.checkHit(normX, normY);
+                                if (onAnotherStateNode) {
+                                    iModel.setSelectedItem(model.whichItem(normX, normY));
+                                    model.setZOrdering(iModel.getSelectedItem());
+                                }
+                            }
+                        } else {
+                            currentState = State.READY;
+                        }
+
+                    }
+                }
+            }
+
+            case "link" ->{
+                switch (currentState){
+                    case READY -> {
+                        if (model.checkHit(normX, normY) && !model.whichItem(normX, normY).getIsTransition()) {
+                            startNode = (SMStateNode) model.whichItem(normX, normY);
+                            System.out.println(startNode);
                             currentState = State.PREPARE_CREATE;
                         }
                         else{
                             currentState = State.READY;
                         }
                     }
-                }
-            }
 
-            case SELECTED -> {
-                if (iModel.getSelectedStateNode() != null) {
-                    boolean onSelectedStateNode = iModel.getSelectedStateNode().contains(normX, normY);
-                    if (onSelectedStateNode) {
-                        currentState = State.MOVING;
-                    } else {
-                        boolean onAnotherStateNode = model.checkHit(normX, normY);
-                        if (onAnotherStateNode) {
-                            iModel.setSelectedStateNode(model.whichStateNode(normX, normY));
-                            model.setZOrdering(iModel.getSelectedStateNode());
+                    case SELECTED -> {
+                        if (iModel.getSelectedItem() != null) {
+                            boolean onSelectedStateNode = iModel.getSelectedItem().contains(normX, normY);
+                            if (onSelectedStateNode && !model.whichItem(normX, normY).getIsTransition()) {
+                                System.out.println("hiiiiii");
+                                startNode = (SMStateNode) model.whichItem(normX, normY);
+                                currentState = State.PREPARE_CREATE;
+                            } else {
+                                boolean onAnotherStateNode = model.checkHit(normX, normY);
+                                if (onAnotherStateNode && !model.whichItem(normX, normY).getIsTransition()) {
+                                    startNode = (SMStateNode) model.whichItem(normX, normY);
+                                }
+                            }
+                        } else {
+                            currentState = State.READY;
                         }
                     }
-                } else {
-                    currentState = State.READY;
                 }
+
             }
         }
     }
@@ -121,8 +146,8 @@ public class AppController {
             case PREPARE_CREATE -> {
                 switch (iModel.getSelectedCursor()){
                     case "pointer" -> {
-                        SMStateNode newStateNode = model.createStateNode(prevX, prevY);
-                        iModel.setSelectedStateNode(newStateNode);
+                        SMItem newStateNode = model.addItem(prevX, prevY, 110.0, 60.0, "Node");
+                        iModel.setSelectedItem(newStateNode);
                         currentState = State.READY;
                     }
                     case "link" -> {
@@ -130,7 +155,7 @@ public class AppController {
                     }
                 }
             }
-            case MOVING -> {
+            case DRAGGING -> {
                 switch(iModel.getSelectedCursor()){
                     case "pointer" -> {
                         currentState = State.SELECTED;
@@ -138,19 +163,48 @@ public class AppController {
                     case "link" -> {
                         // check if on a state node
                         boolean hit = model.checkHit(normX, normY);
-                        if (hit) {
-                            transitionLink.setEndNode(model.whichStateNode(normX, normY));
-                            transitionLink.setX(transitionLink.getStartNode().getX() + transitionLink.getEndNode().getWidth()/2);
-                            transitionLink.setY(transitionLink.getStartNode().getY() + transitionLink.getEndNode().getHeight()/2);
-                            transitionLink.setX2(transitionLink.getEndNode().getX() + transitionLink.getEndNode().getWidth()/2);
-                            transitionLink.setY2(transitionLink.getEndNode().getY() + transitionLink.getEndNode().getHeight()/2);
+                        if (hit && !model.whichItem(normX, normY).getIsTransition()) {
+
+                            model.deleteTransitionLink(transitionLink);
+                            endNode = (SMStateNode) model.whichItem(normX, normY);
+
+                            transitionLink = (SMTransitionLink) model.addItem(prevX, prevY, normX, normY, "Link");
+
+                            //Set the start and end nodes of transition link
+                            transitionLink.setEndNode(endNode);
+                            transitionLink.setStartNode(startNode);
+
+                            // Set coordinates of transition link to center
+                            transitionLink.setX(transitionLink.getStartNode().getX());
+                            transitionLink.setY(transitionLink.getStartNode().getY());
+                            transitionLink.setX2(transitionLink.getEndNode().getX());
+                            transitionLink.setY2(transitionLink.getEndNode().getY());
+
+                            // Setting coordinates of transition node
+                            transitionLink.transitionNodeX = (startNode.getX() + endNode.getX())/2;
+                            transitionLink.transitionNodeY = (startNode.getY() + endNode.getY())/2;
 
 
-                            iModel.setSelectedStateNode(null);
+                            transitionLink.getStartNode().addLink(transitionLink);
+                            transitionLink.getEndNode().addLink(transitionLink);
+
+
+                            model.setZOrdering(transitionLink.getStartNode());
+                            model.setZOrdering(transitionLink.getEndNode());
+
+
+
+                            //Made a method that notifies subscribers so the arrow is drawn on the final
+                            //link
+                            model.makeFinalLink(transitionLink);
+
+
+
+                            iModel.setSelectedItem(null);
+                            transitionLink = null;
                             currentState = State.READY;
 
                         } else {
-
                                 model.deleteTransitionLink(transitionLink);
                                 currentState = State.READY;
                         }
@@ -159,20 +213,7 @@ public class AppController {
             }
 
             case SELECTED -> {
-
-                // check if on a state node
-                if (prevX == normX && prevY == normY) {
-                    boolean hit = model.checkHit(normX, normY);
-                    if (hit) {
-                        iModel.setSelectedStateNode(model.whichStateNode(normX, normY));
-                        model.setZOrdering(iModel.getSelectedStateNode());
-                    } else {
-                        if (prevX == normX && prevY == normY) {
-                            iModel.setSelectedStateNode(null);
-                            currentState = State.READY;
-                        }
-                    }
-                }
+                currentState = State.READY;
             }
         }
     }
@@ -201,46 +242,59 @@ public class AppController {
                     }
                     case "link" ->{
                         // adjust the size of the transition link being drawn
-                        transitionLink = model.createTransitionLink(prevX, prevY, normX, normY, model.whichStateNode(normX, normY));
-                        model.setLinkZOrdering(transitionLink);
+                        model.deleteTransitionLink(transitionLink);
+                        transitionLink = (SMTransitionLink) model.addItem(prevX, prevY, normX, normY, "Link");
                         model.notifySubscribers();
-                        currentState = State.MOVING;
+                        currentState = State.DRAGGING;
                     }
                 }
             }
 
             case SELECTED -> {
-                if (iModel.getSelectedStateNode() != null) {
-                    boolean onStateNodeXY = iModel.getSelectedStateNode().contains(normX, normY);
-                    if (onStateNodeXY) {
-                        boolean onPrevStateNodeXY = iModel.getSelectedStateNode().contains(prevX, prevY);
-                        if (onPrevStateNodeXY) {
-                            // get ready to move state node
-                            currentState = State.MOVING;
+                switch(iModel.getSelectedCursor()){
+                    case "pointer" -> {
+                        if (iModel.getSelectedItem() != null) {
+                            boolean onStateNodeXY = iModel.getSelectedItem().contains(normX, normY);
+                            if (onStateNodeXY) {
+                                boolean onPrevStateNodeXY = iModel.getSelectedItem().contains(prevX, prevY);
+                                if (onPrevStateNodeXY) {
+                                    // get ready to move state node
+                                    currentState = State.DRAGGING;
+                                }
+                            }
+                        } else {
+                            currentState = State.READY;
                         }
                     }
-                } else {
-                    currentState = State.READY;
+
+                    case "link" -> {
+                        currentState = State.PREPARE_CREATE;
+                    }
                 }
             }
-            case MOVING -> {
+            case DRAGGING -> {
                 // move the state node
                 switch(iModel.getSelectedCursor()){
                     case "pointer" -> {
-                        model.moveStateNode(iModel.getSelectedStateNode(), normX, normY);
+                        model.moveItem(iModel.getSelectedItem(), normX, normY);
 
-                        iModel.getSelectedStateNode().getTransitionLinks().forEach(tLink -> {
-                            if(iModel.getSelectedStateNode() == tLink.getEndNode()){
-                                model.resizeTransitionLinkEnd(tLink, normX, normY);
-                            }  if (iModel.getSelectedStateNode() == tLink.getStartNode()) {
-                                model.resizeTransitionLinkStart(tLink, normX, normY);
+                        model.getItems().forEach(item -> {
+                            if(!item.getIsTransition()){
+                                ((SMStateNode) item).getTransitionLinks().forEach(tLink -> {
+                                    if(iModel.getSelectedItem() == tLink.getEndNode()){
+                                        model.resizeTransitionLinkEnd(tLink, normX, normY);
+                                    }  if (iModel.getSelectedItem() == tLink.getStartNode()) {
+                                        model.resizeTransitionLinkStart(tLink, normX, normY);
+                                    }
+                                });
                             }
-
                         });
                     }
                     case "link" -> {
                         // resize the transition link
-                        model.resizeTransitionLinkEnd(transitionLink, normX, normY);
+                        if(transitionLink != null){
+                            model.resizeTransitionLinkEnd(transitionLink, normX, normY);
+                        }
                     }
                 }
 

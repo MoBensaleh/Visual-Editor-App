@@ -1,11 +1,11 @@
 package com.example.assignment3.models;
 
-public class SMTransitionLink {
-    private String nodeText;
-    public double x, y, x2, y2, initialX, initialY;
-    private SMStateNode startNode;
-    private SMStateNode endNode;
-    private int z;
+public class SMTransitionLink extends SMItem{
+    private SMStateNode startNode, endNode;
+    private Boolean isFinal;
+    private Boolean isTransitionNode;
+
+    public double transitionNodeX, transitionNodeY;
 
     /**
      * Constructor for XLine
@@ -14,16 +14,22 @@ public class SMTransitionLink {
      * @param newX2 ending x coordinate
      * @param newY2 ending y coordinate
      */
-    public SMTransitionLink(double newX1, double newY1, double newX2, double newY2, SMStateNode start, SMStateNode end) {
-        x = newX1;
-        y = newY1;
-        x2 = newX2;
-        y2 = newY2;
-        initialX = newX1;
-        initialY = newY1;
-        startNode = start;
-        endNode = end;
+    public SMTransitionLink(double newX1, double newY1, double newX2, double newY2) {
+        super(newX1, newY1, newX2, newY2);
+        isFinal = false;
+        isTransitionNode = true;
+        transitionNodeX = 0.0;
+        transitionNodeY = 0.0;
 
+
+    }
+
+    public void setFinal(Boolean aFinal) {
+        isFinal = aFinal;
+    }
+
+    public Boolean getFinal() {
+        return isFinal;
     }
 
 
@@ -34,8 +40,8 @@ public class SMTransitionLink {
      */
 
     public void resizeEnd(double newX, double newY) {
-        x2 = newX;
-        y2 = newY;
+        width = newX;
+        height = newY;
     }
 
     /**
@@ -49,21 +55,6 @@ public class SMTransitionLink {
         y = newY;
     }
 
-    /**
-     * Set the z value of the state node
-     * @param newZ the z value
-     */
-    public void setZ(int newZ) {
-        z = newZ;
-    }
-
-    /**
-     * Get the z value of the state node
-     * @return the z value
-     */
-    public int getZ() {
-        return z;
-    }
 
     /**
      * Get the start node of transition link
@@ -72,6 +63,15 @@ public class SMTransitionLink {
     public SMStateNode getStartNode() {
         return startNode;
     }
+
+    /**
+     * Set the start node of transition link
+     */
+    public void setStartNode(SMStateNode startNode) {
+        this.startNode = startNode;
+
+    }
+
 
     /**
      * Get the end node of transition link
@@ -85,9 +85,25 @@ public class SMTransitionLink {
      * Set the end node of transition link
      */
     public void setEndNode(SMStateNode endNode) {
-        endNode.addTransitionLink(this);
         this.endNode = endNode;
+    }
 
+    @Override
+    public boolean getIsTransition(){
+        return this.isTransitionNode;
+    }
+
+    @Override
+    public void move(double normX, double normY) {
+        transitionNodeX = normX;
+        transitionNodeY = normY;
+        initialX = x;
+        initialY = y;
+    }
+
+    @Override
+    public boolean contains(double mouseX, double mouseY) {
+        return mouseX >= transitionNodeX-(60) && mouseX <= transitionNodeX+(60) && mouseY >= transitionNodeY-(60) && mouseY <= transitionNodeY+(60);
     }
 
     /**
@@ -111,7 +127,7 @@ public class SMTransitionLink {
      * @param newX2  the new end x value
      */
     public void setX2(double newX2) {
-        x2 = newX2;
+        width = newX2;
     }
 
     /**
@@ -119,6 +135,6 @@ public class SMTransitionLink {
      * @param newY2  the new end y value
      */
     public void setY2(double newY2) {
-        y2 = newY2;
+        height = newY2;
     }
 }

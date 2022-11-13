@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class InteractionModel {
     private final ArrayList<IModelSubscriber> subs;
     private String selectedCursor;
-    private SMStateNode selectedStateNode;
+    private SMItem selectedItem;
 
     /**
      * Constructor for InteractionModel
@@ -41,19 +41,19 @@ public class InteractionModel {
         notifySubscribers();
     }
     /**
-     * Set the currently selected state node
-     * @param newNode selected state node
+     * Set the currently selected item
+     * @param newItem selected item
      */
-    public void setSelectedStateNode(SMStateNode newNode) {
-        selectedStateNode = newNode;
+    public void setSelectedItem(SMItem newItem) {
+        selectedItem = newItem;
         notifySubscribers();
     }
     /**
-     * Get the currently selected state node
-     * @return selected state node
+     * Get the currently selected item
+     * @return selected item
      */
-    public SMStateNode getSelectedStateNode() {
-        return selectedStateNode;
+    public SMItem getSelectedItem() {
+        return selectedItem;
     }
     /**
      * Get the selected cursor

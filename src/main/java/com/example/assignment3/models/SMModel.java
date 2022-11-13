@@ -8,8 +8,7 @@ import java.util.Comparator;
  */
 public class SMModel {
     private ArrayList<ModelSubscriber> subs;
-    private ArrayList<SMStateNode> stateNodes;
-    private ArrayList<SMTransitionLink> transitionLinks;
+    private ArrayList<SMItem> items;
     private int nextZ;
 
     /**
@@ -17,8 +16,7 @@ public class SMModel {
      */
     public SMModel() {
         subs = new ArrayList<>();
-        stateNodes = new ArrayList<>();
-        transitionLinks = new ArrayList<>();
+        items = new ArrayList<>();
         nextZ = 0;
     }
 
@@ -39,58 +37,98 @@ public class SMModel {
     }
 
     /**
-     * Get the list of state nodes to be drawn
+     * Get the list of items to be drawn
      *
-     * @return list of state nodes
+     * @return list of items
      */
-    public ArrayList<SMStateNode> getStateNodes() {
-        return stateNodes;
-    }
-
-    /**
-     * Get the list of transition links to be drawn
-     *
-     * @return list of transition links
-     */
-    public ArrayList<SMTransitionLink> getTransitionLinks() {
-        return transitionLinks;
+    public ArrayList<SMItem> getItems() {
+        return items;
     }
 
 
     /**
-     * Create a state node given position coordinates
+     * Create an item given position coordinates, it's containing text, and it's id
      *
      * @param normX            normalized x coordinate
      * @param normY            normalized y coordinate
      */
-    public SMStateNode createStateNode(double normX, double normY) {
-        SMStateNode stateNode;
-        stateNode = new SMStateNode(normX, normY, 110.0, 60.0);
+    public SMItem addItem(double normX, double normY, double normWidth, double normHeight, String smId) {
+        SMItem smItem;
+        switch (smId) {
+            case "Node" -> smItem = new SMStateNode(normX, normY, normWidth, normHeight);
+            case "Link" -> smItem = new SMTransitionLink(normX, normY, normWidth, normHeight);
+            default -> smItem = null;
+        }
 
-        stateNode.setNodeText("Default");
-        setZOrdering(stateNode);
-        stateNodes.add(stateNode);
+//        if(smItem instanceof SMTransitionLink){
+//            System.out.println(whichItem(normX, normY));
+//            ((SMTransitionLink) smItem).setStartNode((SMStateNode) whichItem(normX, normY));
+//            ((SMTransitionLink) smItem).getStartNode().addTransitionLink((SMTransitionLink) smItem);
+//        }
+
+        smItem.setItemId(smId);
+        smItem.setItemText("Default");
+        setZOrdering(smItem);
+        items.add(smItem);
         notifySubscribers();
-        return stateNode;
+
+        return smItem;
     }
 
     /**
-     * Create a transition link given position coordinates and a start and end state node.
-     *
-     * @param normX1 starting x coordinate
-     * @param normY1 starting y coordinate
-     * @param startNode start state node
-     *
+     * To figure out the best way to draw a final link between
+     * two nodes that just touches the borders - after mouse release
+     * @param startNode
+     * @param endNode
+     * @return
      */
-    public SMTransitionLink createTransitionLink(double normX1, double normY1, double normX2, double normY2, SMStateNode startNode) {
-        SMTransitionLink smTransitionLink;
-        smTransitionLink = new SMTransitionLink(normX1, normY1, normX2, normY2, startNode, startNode);
-        setLinkZOrdering(smTransitionLink);
-        startNode.addTransitionLink(smTransitionLink);
-        transitionLinks.add(smTransitionLink);
-        notifySubscribers();
-        return smTransitionLink;
+    public double[] bestLink(SMStateNode startNode, SMStateNode endNode){
+
+        double[] values = {0, 0, 0, 0};
+        values[0] = startNode.getX()-(startNode.getWidth()/2);
+        values[1] = startNode.getY()-(startNode.getHeight()/2);
+        values[2] = endNode.getX()-(endNode.getWidth()/2);
+        values[3] = endNode.getY()-(endNode.getHeight()/2);
+
+
+        return values;
     }
+
+    public void makeFinalLink(SMTransitionLink link){
+        link.setFinal(true);
+
+//        double[] coords = this.bestLink(link.getStartNode(), link.getEndNode());
+//        System.out.println(coords[0]);
+//
+//        //Set the coords of the transition node, doing some trig:
+//
+//
+//        double distX = link.getWidth()-link.getX();
+//        double distY = link.getHeight()-link.getY();
+//        //Get the length
+//        //System.out.println("\nPoint 1: " + x1  +", " + y1 + "\nPoint 2: " + x2 + ", " + y2);
+//        double length = Math.sqrt(distX * distX  + distY * distY);
+//        //System.out.println(length);
+//        //Get the angle
+//        double angle = Math.atan2(distY, distX);
+//        //System.out.println("\nAngle: " + angle);
+//        //Figuring out triangular stuff for the first link - pointing to the transition node
+//        double hypotenuse1 = length/3.0;
+//        double opposite1 = Math.sin(angle) * hypotenuse1;
+//        double adjacent1 = Math.cos(angle)* hypotenuse1;
+//
+//        //this.nodes.add(link);
+//
+//        //Now we set it:
+//        link.x = coords[0] + adjacent1;
+//        link.y = coords[1] + opposite1;
+//
+//        System.out.println("\nlink.x: " + link.x + "\nlink.y: " + link.y);
+
+
+        notifySubscribers();
+    }
+
 
     /**
      * Resize transition link end coordinates (dragging action)
@@ -122,21 +160,21 @@ public class SMModel {
      * @return true if clicked a state node, false otherwise
      */
     public boolean checkHit(double normX, double normY) {
-        return stateNodes.stream().anyMatch(s -> s.contains(normX, normY));
+        return items.stream().anyMatch(s -> s.contains(normX, normY));
     }
 
     /**
-     * Determines which state node was selected
+     * Determines which item was selected
      *
      * @param normX mouse X coordinate
      * @param normY mouse Y coordinate
-     * @return the hit state node
+     * @return the hit item
      */
-    public SMStateNode whichStateNode(double normX, double normY) {
-        SMStateNode found = null;
-        for (SMStateNode stateNode : stateNodes) {
-            if (stateNode.contains(normX, normY)) {
-                found = stateNode;
+    public SMItem whichItem(double normX, double normY) {
+        SMItem found = null;
+        for (SMItem item : items) {
+            if (item.contains(normX, normY)) {
+                found = item;
             }
         }
         return found;
@@ -145,12 +183,12 @@ public class SMModel {
     /**
      * Move the selected state node
      *
-     * @param selectedStateNode selected state node
+     * @param selectedItem selected state node
      * @param normX             mouse X location
      * @param normY             mouse Y location
      */
-    public void moveStateNode(SMStateNode selectedStateNode, double normX, double normY) {
-        selectedStateNode.move(normX, normY);
+    public void moveItem(SMItem selectedItem, double normX, double normY) {
+        selectedItem.move(normX, normY);
         notifySubscribers();
     }
 
@@ -160,7 +198,7 @@ public class SMModel {
      * @param selectedStateNode state node to be deleted
      */
     public void deleteSelectedStateNode(SMStateNode selectedStateNode) {
-        stateNodes.remove(selectedStateNode);
+        items.remove(selectedStateNode);
         notifySubscribers();
     }
 
@@ -170,31 +208,19 @@ public class SMModel {
      * @param transitionLink transition link to be deleted
      */
     public void deleteTransitionLink(SMTransitionLink transitionLink) {
-        transitionLinks.remove(transitionLink);
+        items.remove(transitionLink);
         notifySubscribers();
     }
 
     /**
-     * Set the Z value of a state node
+     * Set the Z value of an item
      *
-     * @param stateNode the state node who's Z value needs to be set
+     * @param item the item who's Z value needs to be set
      */
-    public void setZOrdering(SMStateNode stateNode) {
-        stateNode.setZ(nextZ);
+    public void setZOrdering(SMItem item) {
+        item.setZ(nextZ);
         nextZ++;
-        stateNodes.sort(Comparator.comparingInt(SMStateNode::getZ));
-        notifySubscribers();
-    }
-
-    /**
-     * Set the Z value of a transition link
-     *
-     * @param transitionLink the transition link who's Z value needs to be set
-     */
-    public void setLinkZOrdering(SMTransitionLink transitionLink) {
-        transitionLink.setZ(nextZ);
-        nextZ++;
-        transitionLinks.sort(Comparator.comparingInt(SMTransitionLink::getZ));
+        items.sort(Comparator.comparingInt(SMItem::getZ));
         notifySubscribers();
     }
 
