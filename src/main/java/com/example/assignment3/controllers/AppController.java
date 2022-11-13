@@ -184,10 +184,8 @@ public class AppController {
                             transitionLink.transitionNodeX = (startNode.getX() + endNode.getX())/2;
                             transitionLink.transitionNodeY = (startNode.getY() + endNode.getY())/2;
 
-
                             transitionLink.getStartNode().addLink(transitionLink);
                             transitionLink.getEndNode().addLink(transitionLink);
-
 
                             model.setZOrdering(transitionLink.getStartNode());
                             model.setZOrdering(transitionLink.getEndNode());
