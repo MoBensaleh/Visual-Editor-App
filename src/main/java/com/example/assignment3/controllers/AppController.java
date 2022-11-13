@@ -51,6 +51,23 @@ public class AppController {
         iModel.setSelectedCursor(newCursor);
     }
 
+    /**
+     * Delete the selected item if there is one
+     */
+    public void handleDeleteSelected() {
+        if (iModel.getSelectedItem() != null) {
+            if(!iModel.getSelectedItem().isTransition()){
+                SMStateNode stateNode = (SMStateNode) iModel.getSelectedItem();
+                stateNode.getTransitionLinks().forEach(link -> {
+                    model.deleteSelectedItem(link);
+                });
+            }
+            model.deleteSelectedItem(iModel.getSelectedItem());
+            iModel.setSelectedItem(null);
+            currentState = State.READY;
+        }
+    }
+
 
     /**
      * Designate what the controller should do
@@ -92,7 +109,6 @@ public class AppController {
                         } else {
                             currentState = State.READY;
                         }
-
                     }
                 }
             }
@@ -100,7 +116,7 @@ public class AppController {
             case "link" ->{
                 switch (currentState){
                     case READY -> {
-                        if (model.checkHit(normX, normY) && !model.whichItem(normX, normY).getIsTransition()) {
+                        if (model.checkHit(normX, normY) && !model.whichItem(normX, normY).isTransition()) {
                             startNode = (SMStateNode) model.whichItem(normX, normY);
                             System.out.println(startNode);
                             currentState = State.PREPARE_CREATE;
@@ -113,13 +129,12 @@ public class AppController {
                     case SELECTED -> {
                         if (iModel.getSelectedItem() != null) {
                             boolean onSelectedStateNode = iModel.getSelectedItem().contains(normX, normY);
-                            if (onSelectedStateNode && !model.whichItem(normX, normY).getIsTransition()) {
-                                System.out.println("hiiiiii");
+                            if (onSelectedStateNode && !model.whichItem(normX, normY).isTransition()) {
                                 startNode = (SMStateNode) model.whichItem(normX, normY);
                                 currentState = State.PREPARE_CREATE;
                             } else {
                                 boolean onAnotherStateNode = model.checkHit(normX, normY);
-                                if (onAnotherStateNode && !model.whichItem(normX, normY).getIsTransition()) {
+                                if (onAnotherStateNode && !model.whichItem(normX, normY).isTransition()) {
                                     startNode = (SMStateNode) model.whichItem(normX, normY);
                                 }
                             }
@@ -146,8 +161,7 @@ public class AppController {
             case PREPARE_CREATE -> {
                 switch (iModel.getSelectedCursor()){
                     case "pointer" -> {
-                        SMItem newStateNode = model.addItem(prevX, prevY, 110.0, 60.0, "Node");
-                        iModel.setSelectedItem(newStateNode);
+                        iModel.setSelectedItem(model.addItem(prevX, prevY, 110.0, 60.0, "Node"));
                         currentState = State.READY;
                     }
                     case "link" -> {
@@ -163,7 +177,7 @@ public class AppController {
                     case "link" -> {
                         // check if on a state node
                         boolean hit = model.checkHit(normX, normY);
-                        if (hit && !model.whichItem(normX, normY).getIsTransition()) {
+                        if (hit && !model.whichItem(normX, normY).isTransition()) {
 
                             model.deleteTransitionLink(transitionLink);
                             endNode = (SMStateNode) model.whichItem(normX, normY);
@@ -277,7 +291,7 @@ public class AppController {
                         model.moveItem(iModel.getSelectedItem(), normX, normY);
 
                         model.getItems().forEach(item -> {
-                            if(!item.getIsTransition()){
+                            if(!item.isTransition()){
                                 ((SMStateNode) item).getTransitionLinks().forEach(tLink -> {
                                     if(iModel.getSelectedItem() == tLink.getEndNode()){
                                         model.resizeTransitionLinkEnd(tLink, normX, normY);

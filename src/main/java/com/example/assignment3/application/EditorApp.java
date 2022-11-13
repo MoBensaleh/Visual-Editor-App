@@ -38,7 +38,7 @@ public class EditorApp extends Application {
         // add event handler for when delete/backspace key is pressed
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) {
-//                controller.handleDeleteSelected();
+                controller.handleDeleteSelected();
             }
         });
         stage.setTitle("Editor Application");

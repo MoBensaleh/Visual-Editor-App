@@ -47,6 +47,7 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
         for (SMItem item : model.getItems()) {
 //
             if(item instanceof SMStateNode){
+                SMStateNode stateNode = (SMStateNode) item;
                 gc.setFill(Color.YELLOW);
                 gc.setStroke(Color.BLACK);
                 if (item.equals(iModel.getSelectedItem())) {
@@ -60,7 +61,7 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
                 gc.setFill(Color.BLACK);
-                gc.fillText(item.getItemText(), item.x, item.y);
+                gc.fillText(stateNode.getState(), item.x, item.y);
 
 
             }
@@ -136,8 +137,8 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
 
 
         gc.setFill(Color.BLACK);
-//        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.x, link.y-40);
-        //gc.setStroke(Color.BLACK);
+        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.x, link.y-40);
+        gc.setStroke(Color.BLACK);
 
         gc.strokeRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
 

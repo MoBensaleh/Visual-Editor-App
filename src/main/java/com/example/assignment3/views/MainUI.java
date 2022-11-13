@@ -16,6 +16,7 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     private ToolPalette toolPalette;
     private DiagramView diagramView;
     private NodePropertiesView nodePropertiesView;
+    private LinkPropertiesView linkPropertiesView;
     private SMModel model;
     private InteractionModel iModel;
 
@@ -24,11 +25,12 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         toolPalette = new ToolPalette();
         diagramView = new DiagramView(1600, 1600);
         nodePropertiesView = new NodePropertiesView();
-        diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-nodePropertiesView.getWidth());
+        linkPropertiesView = new LinkPropertiesView();
+        diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-linkPropertiesView.getWidth());
 
         this.setLeft(toolPalette);
         this.setCenter(diagramView);
-        this.setRight(nodePropertiesView);
+        this.setRight(linkPropertiesView);
 
         // make the canvas view resize based on the main application
         this.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -52,9 +54,11 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         toolPalette.setInteractionModel(newIModel);
         diagramView.setInteractionModel(newIModel);
         nodePropertiesView.setInteractionModel(newIModel);
+        linkPropertiesView.setInteractionModel(newIModel);
         iModel.addSub(toolPalette);
         iModel.addSub(diagramView);
         iModel.addSub(nodePropertiesView);
+        iModel.addSub(linkPropertiesView);
     }
 
     /**
@@ -74,6 +78,7 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         toolPalette.setController(newController);
         diagramView.setController(newController);
         nodePropertiesView.setController(newController);
+        linkPropertiesView.setController(newController);
     }
 
 

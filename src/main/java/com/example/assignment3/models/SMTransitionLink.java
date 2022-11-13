@@ -4,7 +4,7 @@ public class SMTransitionLink extends SMItem{
     private SMStateNode startNode, endNode;
     private Boolean isFinal;
     private Boolean isTransitionNode;
-
+    private String event, context, sideEffects;
     public double transitionNodeX, transitionNodeY;
 
     /**
@@ -89,7 +89,7 @@ public class SMTransitionLink extends SMItem{
     }
 
     @Override
-    public boolean getIsTransition(){
+    public boolean isTransition(){
         return this.isTransitionNode;
     }
 
@@ -136,5 +136,29 @@ public class SMTransitionLink extends SMItem{
      */
     public void setY2(double newY2) {
         height = newY2;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public String getSideEffects() {
+        return sideEffects;
+    }
+
+    public void setEvent(String newEvent) {
+        event = newEvent;
+    }
+
+    public void setContext(String newContext) {
+        context = newContext;
+    }
+
+    public void setSideEffects(String newSideEffects) {
+        sideEffects = newSideEffects;
     }
 }

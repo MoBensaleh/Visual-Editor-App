@@ -1,7 +1,5 @@
 package com.example.assignment3.models;
 
-import java.util.ArrayList;
-
 public abstract class SMItem {
     public double x, y, width, height, initialX, initialY;
     private String itemText;
@@ -19,7 +17,7 @@ public abstract class SMItem {
 //        double handleY = y + height;
     }
 
-    public abstract boolean getIsTransition();
+    public abstract boolean isTransition();
 
     /**
      * Determine if a point lies in the item

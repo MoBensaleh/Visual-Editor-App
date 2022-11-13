@@ -145,12 +145,12 @@ public class SMModel {
     }
 
     /**
-     * Delete the selected state node
+     * Delete the selected item
      *
-     * @param selectedStateNode state node to be deleted
+     * @param selectedItem item to be deleted
      */
-    public void deleteSelectedStateNode(SMStateNode selectedStateNode) {
-        items.remove(selectedStateNode);
+    public void deleteSelectedItem(SMItem selectedItem) {
+        items.remove(selectedItem);
         notifySubscribers();
     }
 

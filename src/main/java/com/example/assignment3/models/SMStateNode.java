@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class SMStateNode extends SMItem {
     private Boolean isTransitionNode;
-
+    private String state;
     private ArrayList<SMTransitionLink> transitionLinks;
 
     /**
@@ -29,8 +29,16 @@ public class SMStateNode extends SMItem {
 
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String newState) {
+        state = newState;
+    }
+
     @Override
-    public boolean getIsTransition() {
+    public boolean isTransition() {
         return isTransitionNode;
     }
 
