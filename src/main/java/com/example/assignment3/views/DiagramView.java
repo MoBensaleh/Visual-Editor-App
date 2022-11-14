@@ -116,11 +116,17 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
         Pair<Double, Double> startNodeEdgeCoordinates = getDistanceFromCenter(startArrowAngle, 110, 60);
         gc.strokeLine(link.x+startNodeEdgeCoordinates.getKey(), link.y+startNodeEdgeCoordinates.getValue(), link.transitionNodeX, link.transitionNodeY);
 
+        // For self-links
+        if(link.getStartNode() == link.getEndNode()){
+            drawSelfLink(gc, link, startArrowAngle, startNodeEdgeCoordinates.getKey(), startNodeEdgeCoordinates.getValue());
+        }
+
         // Ensuring when transition node is selected, second transition link isn't shown on top of state node due to z-ordering
         double endDX = link.width - link.transitionNodeX, endDY = link.height - link.transitionNodeY;
         double endArrowAngle = Math.atan2(endDY, endDX);
         Pair<Double, Double> endNodeEdgeCoordinates = getDistanceFromCenter(endArrowAngle, 110, 60);
         gc.strokeLine(link.transitionNodeX, link.transitionNodeY, link.width-endNodeEdgeCoordinates.getKey(), link.height-endNodeEdgeCoordinates.getValue());
+
 
         // Drawing arrows
         drawArrow(gc, link.x,link.y,  link.transitionNodeX, link.transitionNodeY, 120.0, 120.0);
@@ -132,16 +138,25 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
             gc.setStroke(Color.RED);
         }
 
-        gc.setFill(Color.WHITESMOKE);
+        gc.setFill(Color.rgb(255, 255, 224));
+
         gc.fillRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
-
-
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
         gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.transitionNodeX-50, link.transitionNodeY);
-        System.out.println(link.getEvent());
         gc.strokeRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
 
+    }
+    private void drawSelfLink(GraphicsContext gc, SMTransitionLink link, double angle, double startOffsetX, double startOffsetY){
+        Pair<Double, Double> transitionNodeEdgeCoords = getDistanceFromCenter(angle, 120, 120);
+
+        double dx = (link.transitionNodeX-transitionNodeEdgeCoords.getKey()) - (link.x + startOffsetX);
+        double dy = (link.transitionNodeY-transitionNodeEdgeCoords.getValue()) - (link.y + startOffsetY);
+        double length = Math.sqrt(dx * dx + dy * dy);
+
+        gc.strokeOval(((((link.x + startOffsetX) + ((link.transitionNodeX-transitionNodeEdgeCoords.getKey())))/2)-(length/2)),
+                ((((link.y+ startOffsetY)+(link.transitionNodeY-transitionNodeEdgeCoords.getValue()))/2)- (length/2)),
+                length, length);
     }
     private Pair<Double, Double> getDistanceFromCenter(double arrowAngle, double width, double height){
         double c = Math.cos(arrowAngle);

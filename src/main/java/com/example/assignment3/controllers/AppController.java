@@ -231,8 +231,20 @@ public class AppController {
                             transitionLink.setY2(transitionLink.getEndNode().getY());
 
                             // Setting coordinates of transition node
-                            transitionLink.transitionNodeX = (startNode.getX() + endNode.getX())/2;
-                            transitionLink.transitionNodeY = (startNode.getY() + endNode.getY())/2;
+                            if(transitionLink.getStartNode() == transitionLink.getEndNode()){
+                                if(prevX <  normX){
+                                    transitionLink.transitionNodeX = startNode.getX() + 240;
+                                }
+                                else {
+                                    transitionLink.transitionNodeX = startNode.getX() - 240;
+                                }
+                                transitionLink.transitionNodeY = startNode.getY();
+                            }
+                            else{
+                                transitionLink.transitionNodeX = (startNode.getX() + endNode.getX())/2;
+                                transitionLink.transitionNodeY = (startNode.getY() + endNode.getY())/2;
+                            }
+
 
                             transitionLink.getStartNode().addLink(transitionLink);
                             transitionLink.getEndNode().addLink(transitionLink);
