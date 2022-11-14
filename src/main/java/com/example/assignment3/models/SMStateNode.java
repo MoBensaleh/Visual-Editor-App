@@ -1,6 +1,7 @@
 package com.example.assignment3.models;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SMStateNode extends SMItem {
     private Boolean isTransitionNode;
@@ -30,7 +31,12 @@ public class SMStateNode extends SMItem {
     }
 
     public String getState() {
-        return state;
+        if(!Objects.equals(state, "") && state != null){
+            return state;
+        }
+        else{
+            return "Default";
+        }
     }
 
     public void setState(String newState) {

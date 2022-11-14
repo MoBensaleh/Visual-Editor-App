@@ -1,5 +1,7 @@
 package com.example.assignment3.models;
 
+import javafx.scene.layout.StackPane;
+
 import java.util.ArrayList;
 
 /**
@@ -9,6 +11,7 @@ public class InteractionModel {
     private final ArrayList<IModelSubscriber> subs;
     private String selectedCursor;
     private SMItem selectedItem;
+    private String currentPropertiesView;
 
     /**
      * Constructor for InteractionModel
@@ -47,6 +50,23 @@ public class InteractionModel {
     public void setSelectedItem(SMItem newItem) {
         selectedItem = newItem;
         notifySubscribers();
+    }
+
+    /**
+     * Set the item properties view id
+     * @param propertyViewId right properties view id based on if a state node or transition link is selected
+     */
+    public void setPropertiesViewId(String propertyViewId) {
+        currentPropertiesView = propertyViewId;
+        notifySubscribers();
+    }
+
+    /**
+     * Get the current properties view id
+     *  @return the current properties view id
+     */
+    public String getCurrentPropertiesViewId() {
+        return currentPropertiesView;
     }
     /**
      * Get the currently selected item

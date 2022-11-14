@@ -3,6 +3,8 @@ package com.example.assignment3.views;
 import com.example.assignment3.controllers.AppController;
 import com.example.assignment3.models.IModelSubscriber;
 import com.example.assignment3.models.InteractionModel;
+import com.example.assignment3.models.SMStateNode;
+import com.example.assignment3.models.SMTransitionLink;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,6 +20,10 @@ import javafx.scene.text.FontWeight;
 public class LinkPropertiesView extends StackPane implements IModelSubscriber {
 
     private InteractionModel iModel;
+    private Button updateButton;
+    private TextField eventText;
+    private TextArea contextText;
+    private TextArea sideEffectsText;
 
     public LinkPropertiesView(){
         //working our way top to bottom of the template in the assignment description:
@@ -34,25 +40,25 @@ public class LinkPropertiesView extends StackPane implements IModelSubscriber {
         Label eventLabel = new Label("Event:");
         eventLabel.setPadding(new Insets(6, 0, 6 ,0));
 
-        TextField eventText = new TextField();
+        eventText = new TextField();
         eventText.setPromptText("No Event");
 
         Label contextLabel = new Label("Context:");
         contextLabel.setPadding(new Insets(6, 0, 6 ,0));
 
-        TextArea contextText = new TextArea();
+        contextText = new TextArea();
         contextText.setPromptText("No Context");
         contextText.setPrefHeight(200);
 
         Label sideEffectsLabel = new Label("Side Effects:");
         sideEffectsLabel.setPadding(new Insets(6, 0, 6 ,0));
 
-        TextArea sideEffectsText = new TextArea();
+        sideEffectsText = new TextArea();
         sideEffectsText.setPromptText("No Side Effects");
         sideEffectsText.setPrefHeight(200);
 
         HBox btnContainer = new HBox();
-        Button updateButton = new Button("Update");
+        updateButton = new Button("Update");
         btnContainer.getChildren().add(updateButton);
         btnContainer.setPadding(new Insets(6, 0 ,6, 0));
 
@@ -77,11 +83,18 @@ public class LinkPropertiesView extends StackPane implements IModelSubscriber {
      * @param newController the controller
      */
     public void setController(AppController newController) {
-
+        updateButton.setOnAction(e->{
+            newController.handleUpdateLinkProperties((SMTransitionLink) iModel.getSelectedItem(), eventText.getText(), contextText.getText(), sideEffectsText.getText());
+        });
     }
 
     @Override
     public void iModelUpdated() {
-
+        if(iModel.getSelectedItem() != null && iModel.getSelectedItem().isTransition()){
+            SMTransitionLink selectedLink = (SMTransitionLink) iModel.getSelectedItem();
+            eventText.setText(selectedLink.getEvent());
+            contextText.setText(selectedLink.getContext());
+            sideEffectsText.setText(selectedLink.getSideEffects());
+        }
     }
 }

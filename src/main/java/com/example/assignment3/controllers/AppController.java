@@ -14,6 +14,7 @@ public class AppController {
     private SMTransitionLink transitionLink;
     private SMStateNode startNode;
     private SMStateNode endNode;
+    private Boolean linkCreated = false;
 
     protected enum State {
         READY, PREPARE_CREATE, SELECTED, DRAGGING
@@ -68,6 +69,27 @@ public class AppController {
         }
     }
 
+    public void handleUpdateLinkProperties(SMTransitionLink link, String event, String context, String sideEffects){
+        link.setEvent(event);
+        link.setContext(context);
+        link.setSideEffects(sideEffects);
+        iModel.notifySubscribers();
+    }
+    public void handleUpdateNodeProperties(SMStateNode node, String state){
+        node.setState(state);
+        iModel.notifySubscribers();
+    }
+
+    public void handlePropertiesViewSwitch(double normX, double normY){
+        boolean hit = model.checkHit(normX, normY);
+        if(hit && model.whichItem(normX, normY).isTransition() || linkCreated){
+            iModel.setPropertiesViewId("link");
+        }
+        else{
+            iModel.setPropertiesViewId("node");
+        }
+    }
+
 
     /**
      * Designate what the controller should do
@@ -81,7 +103,9 @@ public class AppController {
             case "pointer" ->{
                 switch (currentState){
                     case READY -> {
-                        if (model.checkHit(normX, normY)) {
+                        linkCreated = false;
+                        boolean hit = model.checkHit(normX, normY);
+                        if (hit) {
                             SMItem item = model.whichItem(normX, normY);
                             iModel.setSelectedItem(item);
                             currentState = State.SELECTED;
@@ -92,6 +116,8 @@ public class AppController {
                             prevY = normY;
                             currentState = State.PREPARE_CREATE;
                         }
+
+                        handlePropertiesViewSwitch(normX, normY);
                     }
 
                     case SELECTED -> {
@@ -105,10 +131,17 @@ public class AppController {
                                     iModel.setSelectedItem(model.whichItem(normX, normY));
                                     model.setZOrdering(iModel.getSelectedItem());
                                 }
+                                else{
+                                    iModel.setSelectedItem(null);
+                                    prevX = normX;
+                                    prevY = normY;
+                                    currentState = State.PREPARE_CREATE;
+                                }
                             }
                         } else {
                             currentState = State.READY;
                         }
+                        handlePropertiesViewSwitch(normX, normY);
                     }
                 }
             }
@@ -183,6 +216,9 @@ public class AppController {
                             endNode = (SMStateNode) model.whichItem(normX, normY);
 
                             transitionLink = (SMTransitionLink) model.addItem(prevX, prevY, normX, normY, "Link");
+                            iModel.setSelectedItem(transitionLink);
+                            linkCreated = true;
+                            handlePropertiesViewSwitch(normX, normY);
 
                             //Set the start and end nodes of transition link
                             transitionLink.setEndNode(endNode);
@@ -210,9 +246,6 @@ public class AppController {
                             //link
                             model.makeFinalLink(transitionLink);
 
-
-
-                            iModel.setSelectedItem(null);
                             transitionLink = null;
                             currentState = State.READY;
 

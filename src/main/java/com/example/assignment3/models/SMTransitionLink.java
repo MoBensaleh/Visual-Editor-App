@@ -1,5 +1,7 @@
 package com.example.assignment3.models;
 
+import java.util.Objects;
+
 public class SMTransitionLink extends SMItem{
     private SMStateNode startNode, endNode;
     private Boolean isFinal;
@@ -139,15 +141,30 @@ public class SMTransitionLink extends SMItem{
     }
 
     public String getContext() {
-        return context;
+        if(!Objects.equals(context, "") && context != null){
+            return context;
+        }
+        else{
+            return "No Context";
+        }
     }
 
     public String getEvent() {
-        return event;
+        if(!Objects.equals(event, "") && event != null){
+            return event;
+        }
+        else{
+            return "No Event";
+        }
     }
 
     public String getSideEffects() {
-        return sideEffects;
+        if(!Objects.equals(sideEffects, "") && sideEffects != null){
+            return sideEffects;
+        }
+        else{
+            return "No Side Effects";
+        }
     }
 
     public void setEvent(String newEvent) {

@@ -6,7 +6,9 @@ import com.example.assignment3.models.InteractionModel;
 import com.example.assignment3.models.ModelSubscriber;
 import com.example.assignment3.models.SMModel;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 /**
  * A view that contains and lays out the tool palette,
@@ -17,6 +19,7 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     private DiagramView diagramView;
     private NodePropertiesView nodePropertiesView;
     private LinkPropertiesView linkPropertiesView;
+    private StackPane propertiesView;
     private SMModel model;
     private InteractionModel iModel;
 
@@ -26,11 +29,15 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         diagramView = new DiagramView(1600, 1600);
         nodePropertiesView = new NodePropertiesView();
         linkPropertiesView = new LinkPropertiesView();
-        diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-linkPropertiesView.getWidth());
+
+        // Setting initial properties view
+        propertiesView = nodePropertiesView;
+
+        diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-propertiesView.getWidth());
 
         this.setLeft(toolPalette);
         this.setCenter(diagramView);
-        this.setRight(linkPropertiesView);
+        this.setRight(propertiesView);
 
         // make the canvas view resize based on the main application
         this.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -99,6 +106,15 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
                 this.getScene().setCursor(Cursor.MOVE);
             }
         }
+        System.out.println(iModel.getCurrentPropertiesViewId());
 
+        if(iModel.getCurrentPropertiesViewId() == "link"){
+            propertiesView = linkPropertiesView;
+            this.setRight(linkPropertiesView);
+        }
+        else{
+            propertiesView = nodePropertiesView;
+            this.setRight(nodePropertiesView);
+        }
     }
 }

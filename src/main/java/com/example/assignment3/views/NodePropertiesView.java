@@ -3,10 +3,12 @@ package com.example.assignment3.views;
 import com.example.assignment3.controllers.AppController;
 import com.example.assignment3.models.IModelSubscriber;
 import com.example.assignment3.models.InteractionModel;
+import com.example.assignment3.models.SMStateNode;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -16,6 +18,8 @@ import javafx.scene.text.FontWeight;
 public class NodePropertiesView extends StackPane implements IModelSubscriber {
 
     private InteractionModel iModel;
+    private TextField stateText;
+
     public NodePropertiesView(){
         //working our way top to bottom of the template in the assignment description:
         VBox root = new VBox();
@@ -31,7 +35,7 @@ public class NodePropertiesView extends StackPane implements IModelSubscriber {
         Label stateLabel = new Label("State Name:");
         stateLabel.setPadding(new Insets(6, 0, 6 ,0));
 
-        TextField stateText = new TextField();
+        stateText = new TextField();
         stateText.setPromptText("Default");
 
 
@@ -56,10 +60,20 @@ public class NodePropertiesView extends StackPane implements IModelSubscriber {
      */
     public void setController(AppController newController) {
 
+        // add event handler for enter key is pressed
+        setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER){
+                newController.handleUpdateNodeProperties((SMStateNode) iModel.getSelectedItem(), stateText.getText());
+            }
+        });
+
     }
 
     @Override
     public void iModelUpdated() {
-
+        if(iModel.getSelectedItem() != null && !iModel.getSelectedItem().isTransition()){
+            SMStateNode selectedNode = (SMStateNode) iModel.getSelectedItem();
+            stateText.setText(selectedNode.getState());
+        }
     }
 }

@@ -137,9 +137,9 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
 
 
         gc.setFill(Color.BLACK);
-        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.x, link.y-40);
-        gc.setStroke(Color.BLACK);
-
+        gc.setTextAlign(TextAlignment.LEFT);
+        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.transitionNodeX-50, link.transitionNodeY);
+        System.out.println(link.getEvent());
         gc.strokeRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
 
     }
