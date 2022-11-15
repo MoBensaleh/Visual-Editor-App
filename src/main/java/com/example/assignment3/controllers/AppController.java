@@ -190,7 +190,6 @@ public class AppController {
                     case READY -> {
                         if (model.checkHit(normX, normY) && !model.whichItem(normX, normY).isTransition()) {
                             startNode = (SMStateNode) model.whichItem(normX, normY);
-                            System.out.println(startNode);
                             currentState = State.PREPARE_CREATE;
                         }
                         else{

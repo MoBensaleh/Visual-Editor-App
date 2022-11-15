@@ -118,7 +118,6 @@ public class MainUI extends BorderPane implements IModelSubscriber {
                 this.getScene().setCursor(new ImageCursor(moveCursor));
             }
         }
-        System.out.println(iModel.getCurrentPropertiesViewId());
 
         if(iModel.getCurrentPropertiesViewId() == "link"){
             propertiesView = linkPropertiesView;
