@@ -1,6 +1,6 @@
 package com.example.assignment3.views;
 
-import com.example.assignment3.controllers.AppController;
+import com.example.assignment3.controller.AppController;
 import com.example.assignment3.models.*;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;

@@ -4,8 +4,8 @@ module com.example.sideviewdemo {
 
 
     opens com.example.assignment3 to javafx.fxml;
-    exports com.example.assignment3.controllers;
-    opens com.example.assignment3.controllers to javafx.fxml;
+    exports com.example.assignment3.controller;
+    opens com.example.assignment3.controller to javafx.fxml;
     exports com.example.assignment3.application;
     opens com.example.assignment3.application to javafx.fxml;
     exports com.example.assignment3.models;

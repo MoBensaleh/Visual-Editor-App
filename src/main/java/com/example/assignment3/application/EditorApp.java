@@ -1,6 +1,6 @@
 package com.example.assignment3.application;
 
-import com.example.assignment3.controllers.AppController;
+import com.example.assignment3.controller.AppController;
 import com.example.assignment3.models.InteractionModel;
 import com.example.assignment3.models.SMModel;
 import com.example.assignment3.views.MainUI;
