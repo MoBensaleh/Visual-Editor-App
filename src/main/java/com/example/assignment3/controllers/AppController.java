@@ -137,7 +137,6 @@ public class AppController {
                             prevY = normY;
                             currentState = State.PREPARE_CREATE;
                         }
-
                         handlePropertiesViewSwitch(normX, normY);
                     }
 
@@ -210,33 +209,119 @@ public class AppController {
         }
     }
 
+    /**
+     * Designate what the controller should do
+     * based on state when a mouse is dragged
+     * @param normX normalized x coordinate
+     * @param normY normalized y coordinate
+     * @param event mouse event
+     */
+    public void handleDragged(double normX, double normY, MouseEvent event) {
+        switch (iModel.getSelectedCursor()){
+            case "pointer" -> {
+                switch (currentState){
+                    case PREPARE_CREATE -> {
+                        currentState = State.READY;
+                    }
+                    case SELECTED -> {
+                        if (iModel.getSelectedItem() != null) {
+                            boolean onStateNodeXY = iModel.getSelectedItem().contains(normX, normY);
+                            if (onStateNodeXY) {
+                                boolean onPrevStateNodeXY = iModel.getSelectedItem().contains(prevX, prevY);
+                                if (onPrevStateNodeXY) {
+                                    // get ready to move state node
+                                    currentState = State.DRAGGING;
+                                }
+                            }
+                        } else {
+                            currentState = State.READY;
+                        }
+                    }
+
+                    case DRAGGING -> {
+                        model.moveItem(iModel.getSelectedItem(), normX, normY);
+
+                        model.getItems().forEach(item -> {
+                            if(!item.isTransition()){
+                                ((SMStateNode) item).getTransitionLinks().forEach(tLink -> {
+                                    if(iModel.getSelectedItem() == tLink.getEndNode()){
+                                        model.resizeTransitionLinkEnd(tLink, normX, normY);
+                                    }  if (iModel.getSelectedItem() == tLink.getStartNode()) {
+                                        model.resizeTransitionLinkStart(tLink, normX, normY);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+
+            }
+            case "link" -> {
+                switch (currentState){
+                    case PREPARE_CREATE -> {
+                        // adjust the size of the transition link being drawn
+                        model.deleteTransitionLink(transitionLink);
+                        transitionLink = (SMTransitionLink) model.addItem(prevX, prevY, normX, normY, "Link");
+                        model.notifySubscribers();
+                        currentState = State.DRAGGING;
+                    }
+
+                    case SELECTED -> {
+                        currentState = State.PREPARE_CREATE;
+                    }
+
+                    case DRAGGING -> {
+                        // resize the transition link
+                        if(transitionLink != null){
+                            model.resizeTransitionLinkEnd(transitionLink, normX, normY);
+                        }
+                    }
+                }
+            }
+
+            case "move" -> {
+                switch (currentState){
+                    case DRAGGING -> {
+                        // handle view panning
+                        double newX = event.getX()/1600;
+                        double newY = event.getY()/1600;
+                        model.pan(iModel.viewPort, newX, newY, noOffsetX, noOffsetY);
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Designate what the controller should do
      * based on state when a mouse is released
      * @param event mouse event
      */
-
-
     public void handleReleased(double normX, double normY, MouseEvent event) {
-        switch (currentState) {
-            case PREPARE_CREATE -> {
-                switch (iModel.getSelectedCursor()){
-                    case "pointer" -> {
+
+        switch (iModel.getSelectedCursor()){
+            case "pointer" ->{
+                switch (currentState){
+                    case PREPARE_CREATE -> {
                         iModel.setSelectedItem(model.addItem(prevX, prevY, 0.09, 0.05, "Node"));
                         currentState = State.READY;
                     }
-                    case "link" -> {
+                    case DRAGGING -> {
+                        currentState = State.SELECTED;
+                    }
+                    case SELECTED -> {
                         currentState = State.READY;
                     }
                 }
             }
-            case DRAGGING -> {
-                switch(iModel.getSelectedCursor()){
-                    case "pointer" -> {
-                        currentState = State.SELECTED;
+
+            case "link"->{
+                switch (currentState){
+                    case PREPARE_CREATE, SELECTED -> {
+                        currentState = State.READY;
                     }
-                    case "link" -> {
+                    case DRAGGING -> {
                         // check if on a state node
                         boolean hit = model.checkHit(normX, normY);
                         if (hit && !model.whichItem(normX, normY).isTransition()) {
@@ -261,7 +346,7 @@ public class AppController {
 
                             // Setting coordinates of transition node
                             if(transitionLink.getStartNode() == transitionLink.getEndNode()){
-                                if(prevX <  normX){
+                                if(prevX < normX){
                                     transitionLink.transitionNodeX = startNode.getX() + .16;
                                 }
                                 else {
@@ -274,113 +359,21 @@ public class AppController {
                                 transitionLink.transitionNodeY = (startNode.getY() + endNode.getY())/2;
                             }
 
-
                             transitionLink.getStartNode().addLink(transitionLink);
                             transitionLink.getEndNode().addLink(transitionLink);
 
-
-                            //Made a method that notifies subscribers so the arrow is drawn on the final
-                            //link
-                            model.makeFinalLink(transitionLink);
+                            // notifies subscribers to make full transition link
+                            model.addFinalLink(transitionLink);
 
                             transitionLink = null;
                             currentState = State.READY;
 
                         } else {
-                                model.deleteTransitionLink(transitionLink);
-                                currentState = State.READY;
-                        }
-                    }
-                }
-            }
-
-            case SELECTED -> {
-                currentState = State.READY;
-            }
-        }
-    }
-
-    /**
-     * Designate what the controller should do
-     * based on state when a mouse is dragged
-     * @param normX normalized x coordinate
-     * @param normY normalized y coordinate
-     * @param event mouse event
-     */
-    public void handleDragged(double normX, double normY, MouseEvent event) {
-
-        switch (currentState) {
-            case PREPARE_CREATE -> {
-                switch (iModel.getSelectedCursor()){
-                    case "pointer" ->{
-                        currentState = State.READY;
-                    }
-                    case "link" ->{
-                        // adjust the size of the transition link being drawn
-                        model.deleteTransitionLink(transitionLink);
-                        transitionLink = (SMTransitionLink) model.addItem(prevX, prevY, normX, normY, "Link");
-                        model.notifySubscribers();
-                        currentState = State.DRAGGING;
-                    }
-                }
-            }
-
-            case SELECTED -> {
-                switch(iModel.getSelectedCursor()){
-                    case "pointer" -> {
-                        if (iModel.getSelectedItem() != null) {
-                            boolean onStateNodeXY = iModel.getSelectedItem().contains(normX, normY);
-                            if (onStateNodeXY) {
-                                boolean onPrevStateNodeXY = iModel.getSelectedItem().contains(prevX, prevY);
-                                if (onPrevStateNodeXY) {
-                                    // get ready to move state node
-                                    currentState = State.DRAGGING;
-                                }
-                            }
-                        } else {
+                            model.deleteTransitionLink(transitionLink);
                             currentState = State.READY;
                         }
                     }
-
-                    case "link" -> {
-                        currentState = State.PREPARE_CREATE;
-                    }
                 }
-            }
-            case DRAGGING -> {
-                // move the state node
-                switch(iModel.getSelectedCursor()){
-                    case "pointer" -> {
-                        model.moveItem(iModel.getSelectedItem(), normX, normY);
-
-                        model.getItems().forEach(item -> {
-                            if(!item.isTransition()){
-                                ((SMStateNode) item).getTransitionLinks().forEach(tLink -> {
-                                    if(iModel.getSelectedItem() == tLink.getEndNode()){
-                                        model.resizeTransitionLinkEnd(tLink, normX, normY);
-                                    }  if (iModel.getSelectedItem() == tLink.getStartNode()) {
-                                        model.resizeTransitionLinkStart(tLink, normX, normY);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    case "link" -> {
-                        // resize the transition link
-                        if(transitionLink != null){
-                            model.resizeTransitionLinkEnd(transitionLink, normX, normY);
-                        }
-                    }
-
-                    case "move" -> {
-                        // handle view panning
-
-                        double newX = event.getX()/1600;
-                        double newY = event.getY()/1600;
-                        model.pan(iModel.viewPort, newX, newY, noOffsetX, noOffsetY);
-                    }
-                }
-
             }
         }
     }

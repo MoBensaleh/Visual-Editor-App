@@ -60,14 +60,7 @@ public class SMModel {
             default -> smItem = null;
         }
 
-//        if(smItem instanceof SMTransitionLink){
-//            System.out.println(whichItem(normX, normY));
-//            ((SMTransitionLink) smItem).setStartNode((SMStateNode) whichItem(normX, normY));
-//            ((SMTransitionLink) smItem).getStartNode().addTransitionLink((SMTransitionLink) smItem);
-//        }
-
         smItem.setItemId(smId);
-        smItem.setItemText("Default");
         setZOrdering(smItem);
         items.add(smItem);
         notifySubscribers();
@@ -76,7 +69,7 @@ public class SMModel {
     }
 
 
-    public void makeFinalLink(SMTransitionLink link){
+    public void addFinalLink(SMTransitionLink link){
         link.setFinal(true);
         notifySubscribers();
     }
@@ -173,17 +166,6 @@ public class SMModel {
         item.setZ(nextZ);
         nextZ++;
         items.sort(Comparator.comparingInt(SMItem::getZ));
-        notifySubscribers();
-    }
-
-    /**
-     * Move the viewport on the mini view
-     * @param viewPort the viewport
-     * @param normX x location of viewport
-     * @param normY y location of viewport
-     */
-    public void moveViewPort(ViewPort viewPort, double normX, double normY) {
-        viewPort.move(normX, normY);
         notifySubscribers();
     }
 

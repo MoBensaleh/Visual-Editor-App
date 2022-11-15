@@ -2,7 +2,6 @@ package com.example.assignment3.models;
 
 public abstract class SMItem {
     public double x, y, width, height, initialX, initialY;
-    private String itemText;
     private String itemId;
     private int z;
 
@@ -13,8 +12,6 @@ public abstract class SMItem {
         height = newHeight;
         initialX = newX;
         initialY = newY;
-//        double handleX = x + width;
-//        double handleY = y + height;
     }
 
     public abstract boolean isTransition();
@@ -27,8 +24,6 @@ public abstract class SMItem {
      */
     public abstract boolean contains(double mouseX, double mouseY);
 
-
-
     /**
      * Move the item
      * @param normX new X location
@@ -36,29 +31,12 @@ public abstract class SMItem {
      */
     public abstract void move(double normX, double normY);
 
-
     /**
      * Set the id of the item
      * @param smId of item
      */
     public void setItemId(String smId) {
         itemId = smId;
-    }
-
-    /**
-     * Set the text of the item
-     * @param text of item
-     */
-    public void setItemText(String text) {
-        itemText = text;
-    }
-
-    /**
-     * Get the text from the item
-     * @return text of the item
-     */
-    public String getItemText() {
-        return itemText;
     }
 
 
@@ -94,19 +72,4 @@ public abstract class SMItem {
         return y;
     }
 
-    /**
-     * Get the width of the item
-     * @return the width value
-     */
-    public double getWidth() {
-        return width;
-    }
-
-    /**
-     * Get the height of the item
-     * @return the height value
-     */
-    public double getHeight() {
-        return height;
-    }
 }
