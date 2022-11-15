@@ -36,6 +36,9 @@ public class MiniDiagramView extends DiagramView implements ModelSubscriber {
         });
     }
 
+    /**
+     * Draws the items onto the canvas in immediate-mode graphics
+     */
     @Override
     public void draw() {
         double width = myCanvas.getWidth();

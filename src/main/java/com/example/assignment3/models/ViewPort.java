@@ -1,5 +1,4 @@
 package com.example.assignment3.models;
-
 public class ViewPort extends SMStateNode{
     /**
      * Constructor for ViewPort

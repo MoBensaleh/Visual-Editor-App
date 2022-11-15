@@ -1,7 +1,5 @@
 package com.example.assignment3.models;
 
-import javafx.scene.layout.StackPane;
-
 import java.util.ArrayList;
 
 /**

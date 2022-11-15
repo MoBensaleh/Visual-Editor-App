@@ -20,8 +20,10 @@ public class NodePropertiesView extends StackPane implements IModelSubscriber {
     private InteractionModel iModel;
     private TextField stateText;
 
+    /**
+     * Constructor for NodePropertiesView
+     */
     public NodePropertiesView(){
-        //working our way top to bottom of the template in the assignment description:
         VBox root = new VBox();
 
         Label menulabel = new Label("State");

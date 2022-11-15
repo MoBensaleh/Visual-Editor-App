@@ -1,6 +1,5 @@
 package com.example.assignment3.controllers;
 
-
 import com.example.assignment3.models.*;
 import javafx.scene.input.MouseEvent;
 
@@ -47,6 +46,7 @@ public class AppController {
 
     /**
      * Set the selected cursor
+     * @param newCursor selected cursor
      */
     public void handleSelectedCursor(String newCursor) {
         currentState = State.READY;
@@ -88,17 +88,36 @@ public class AppController {
         }
     }
 
+
+    /**
+     * Updates all properties associated with a transition link
+     * @param link selected transition link
+     * @param event event property
+     * @param context context property
+     * @param sideEffects side effects property
+     */
     public void handleUpdateLinkProperties(SMTransitionLink link, String event, String context, String sideEffects){
         link.setEvent(event);
         link.setContext(context);
         link.setSideEffects(sideEffects);
         iModel.notifySubscribers();
     }
+
+    /**
+     * Updates all properties associated with a state node
+     * @param node selected state node
+     * @param state state property
+     */
     public void handleUpdateNodeProperties(SMStateNode node, String state){
         node.setState(state);
         iModel.notifySubscribers();
     }
 
+    /**
+     * Handles properties view switch depending on selected item
+     * @param normX normalized x coordinate of selected item
+     * @param normY normalized y coordinate of selected item
+     */
     public void handlePropertiesViewSwitch(double normX, double normY){
         boolean hit = model.checkHit(normX, normY);
         if(hit && model.whichItem(normX, normY).isTransition() || linkCreated){

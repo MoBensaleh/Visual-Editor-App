@@ -3,7 +3,6 @@ package com.example.assignment3.views;
 import com.example.assignment3.controllers.AppController;
 import com.example.assignment3.models.IModelSubscriber;
 import com.example.assignment3.models.InteractionModel;
-import com.example.assignment3.models.SMStateNode;
 import com.example.assignment3.models.SMTransitionLink;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,8 +24,10 @@ public class LinkPropertiesView extends StackPane implements IModelSubscriber {
     private TextArea contextText;
     private TextArea sideEffectsText;
 
+    /**
+     * Constructor for LinkPropertiesView
+     */
     public LinkPropertiesView(){
-        //working our way top to bottom of the template in the assignment description:
         VBox root = new VBox();
 
         Label menulabel = new Label("Transition");
@@ -88,6 +89,9 @@ public class LinkPropertiesView extends StackPane implements IModelSubscriber {
         });
     }
 
+    /**
+     * Update view based on iModel changes
+     */
     @Override
     public void iModelUpdated() {
         if(iModel.getSelectedItem() != null && iModel.getSelectedItem().isTransition()){

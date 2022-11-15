@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
- * The model that stores all elements of the drawing.
+ * The model that stores all items of the diagram.
  */
 public class SMModel {
     private ArrayList<ModelSubscriber> subs;
@@ -47,10 +47,12 @@ public class SMModel {
 
 
     /**
-     * Create an item given position coordinates, it's containing text, and it's id
+     * Create an item given position coordinates
      *
      * @param normX            normalized x coordinate
      * @param normY            normalized y coordinate
+     * @param normHeight       normalized x2 (or width for state nodes) coordinate
+     * @param normWidth        normalized y2 (or width for state nodes) coordinate
      */
     public SMItem addItem(double normX, double normY, double normWidth, double normHeight, String smId) {
         SMItem smItem;
@@ -69,6 +71,9 @@ public class SMModel {
     }
 
 
+    /**
+     * Flag transition link as final and notify subscribers
+     */
     public void addFinalLink(SMTransitionLink link){
         link.setFinal(true);
         notifySubscribers();
@@ -98,7 +103,7 @@ public class SMModel {
     }
 
     /**
-     * Check if any state node was hit
+     * Check if any item was hit
      *
      * @param normX mouse X coordinate
      * @param normY mouse Y coordinate
@@ -126,9 +131,9 @@ public class SMModel {
     }
 
     /**
-     * Move the selected state node
+     * Move the selected item
      *
-     * @param selectedItem selected state node
+     * @param selectedItem selected item
      * @param normX             mouse X location
      * @param normY             mouse Y location
      */

@@ -12,8 +12,8 @@ public class SMStateNode extends SMItem {
      * Constructor for SMStateNode
      * @param newX initial x location
      * @param newY initial y location
-     * @param newWidth width of shape
-     * @param newHeight height of shape
+     * @param newWidth width of node
+     * @param newHeight height of node
      */
     public SMStateNode(double newX, double newY, double newWidth, double newHeight) {
         super(newX, newY, newWidth, newHeight);
@@ -21,15 +21,26 @@ public class SMStateNode extends SMItem {
         transitionLinks = new ArrayList<>();
     }
 
+
+    /**
+     * @return All transition links attached to this state node
+     */
     public ArrayList<SMTransitionLink> getTransitionLinks() {
         return transitionLinks;
     }
 
+    /**
+     * Add transition link to list of transition links attached to this state node
+     * @param link transition link
+     */
     public void addLink(SMTransitionLink link){
         transitionLinks.add(link);
 
     }
 
+    /**
+     * @return state property
+     */
     public String getState() {
         if(!Objects.equals(state, "") && state != null){
             return state;
@@ -38,6 +49,8 @@ public class SMStateNode extends SMItem {
             return "Default";
         }
     }
+
+
 
     public void setState(String newState) {
         state = newState;

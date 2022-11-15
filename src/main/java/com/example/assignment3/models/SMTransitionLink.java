@@ -26,10 +26,17 @@ public class SMTransitionLink extends SMItem{
 
     }
 
+    /**
+     * Sets flag for whether a transition link is final
+     * @param aFinal flag for whether a transition link is final
+     */
     public void setFinal(Boolean aFinal) {
         isFinal = aFinal;
     }
 
+    /**
+     * @return flag for whether a transition link is final
+     */
     public Boolean getFinal() {
         return isFinal;
     }
@@ -57,7 +64,6 @@ public class SMTransitionLink extends SMItem{
         y = newY;
     }
 
-
     /**
      * Get the start node of transition link
      * @return the start node
@@ -74,7 +80,6 @@ public class SMTransitionLink extends SMItem{
 
     }
 
-
     /**
      * Get the end node of transition link
      * @return the end node
@@ -90,11 +95,21 @@ public class SMTransitionLink extends SMItem{
         this.endNode = endNode;
     }
 
+
+    /**
+     * @return flag for whether this is a transition link
+     */
     @Override
     public boolean isTransition(){
         return this.isTransitionNode;
     }
 
+
+    /**
+     * Moves the transition link
+     * @param normX x coordinate
+     * @param normY y coordinate
+     */
     @Override
     public void move(double normX, double normY) {
         transitionNodeX = normX;
@@ -103,6 +118,12 @@ public class SMTransitionLink extends SMItem{
         initialY = y;
     }
 
+    /**
+     * Determine if a point lies in transition link
+     * @param mouseX x coordinate
+     * @param mouseY y coordinate
+     * @return true if point is in transition link, false otherwise
+     */
     @Override
     public boolean contains(double mouseX, double mouseY) {
         return mouseX >= transitionNodeX-(0.05) && mouseX <= transitionNodeX+(0.05) && mouseY >= transitionNodeY-(0.05) && mouseY <= transitionNodeY+(0.05);
@@ -140,6 +161,9 @@ public class SMTransitionLink extends SMItem{
         height = newY2;
     }
 
+    /**
+     * @return Eontext property
+     */
     public String getContext() {
         if(!Objects.equals(context, "") && context != null){
             return context;
@@ -149,6 +173,9 @@ public class SMTransitionLink extends SMItem{
         }
     }
 
+    /**
+     * @return Event property
+     */
     public String getEvent() {
         if(!Objects.equals(event, "") && event != null){
             return event;
@@ -158,6 +185,9 @@ public class SMTransitionLink extends SMItem{
         }
     }
 
+    /**
+     * @return Side effects property
+     */
     public String getSideEffects() {
         if(!Objects.equals(sideEffects, "") && sideEffects != null){
             return sideEffects;
@@ -167,14 +197,26 @@ public class SMTransitionLink extends SMItem{
         }
     }
 
+    /**
+     * Sets event property
+     * @param newEvent new event property
+     */
     public void setEvent(String newEvent) {
         event = newEvent;
     }
 
+    /**
+     * Sets context property
+     * @param newContext new context property
+     */
     public void setContext(String newContext) {
         context = newContext;
     }
 
+    /**
+     * Sets side effects property
+     * @param newSideEffects new side effects property
+     */
     public void setSideEffects(String newSideEffects) {
         sideEffects = newSideEffects;
     }

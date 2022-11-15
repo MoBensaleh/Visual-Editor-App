@@ -101,6 +101,9 @@ public class MainUI extends BorderPane implements IModelSubscriber {
 
     }
 
+    /**
+     * Update view based on iModel changes
+     */
     @Override
     public void iModelUpdated() {
         switch (iModel.getSelectedCursor()){

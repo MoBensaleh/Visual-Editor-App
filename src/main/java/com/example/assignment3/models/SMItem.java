@@ -1,9 +1,16 @@
 package com.example.assignment3.models;
-
 public abstract class SMItem {
     public double x, y, width, height, initialX, initialY;
     private String itemId;
     private int z;
+
+    /**
+     * Constructor for SMItem
+     * @param newX initial x location
+     * @param newY initial y location
+     * @param newWidth width (or x2 for transition link) of item
+     * @param newHeight height (or y2 for transition link) of item
+     */
 
     public SMItem(double newX, double newY, double newWidth, double newHeight){
         x = newX;
@@ -14,6 +21,9 @@ public abstract class SMItem {
         initialY = newY;
     }
 
+    /**
+     * Determine if an item is a transition link
+     */
     public abstract boolean isTransition();
 
     /**
