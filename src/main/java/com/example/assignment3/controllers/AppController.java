@@ -10,7 +10,7 @@ import javafx.scene.input.MouseEvent;
 public class AppController {
     protected SMModel model;
     protected InteractionModel iModel;
-    protected double prevX, prevY;
+    protected double prevX, prevY, noOffsetX, noOffsetY;
     private SMTransitionLink transitionLink;
     private SMStateNode startNode;
     private SMStateNode endNode;
@@ -49,7 +49,26 @@ public class AppController {
      * Set the selected cursor
      */
     public void handleSelectedCursor(String newCursor) {
+        currentState = State.READY;
         iModel.setSelectedCursor(newCursor);
+    }
+
+    /**
+     * Set the width of the viewport
+     * @param newWidth the new width
+     */
+    public void setViewPortWidth(double newWidth) {
+        iModel.viewPort.width = newWidth;
+        iModel.notifySubscribers();
+    }
+
+    /**
+     * Set the height of the viewport
+     * @param newHeight the new height
+     */
+    public void setViewPortHeight(double newHeight) {
+        iModel.viewPort.height = newHeight;
+        iModel.notifySubscribers();
     }
 
     /**
@@ -99,6 +118,8 @@ public class AppController {
     public void handlePressed(double normX, double normY, MouseEvent event) {
         prevX = normX;
         prevY = normY;
+        noOffsetX = event.getX()/1600;
+        noOffsetY = event.getY()/1600;
         switch(iModel.getSelectedCursor()){
             case "pointer" ->{
                 switch (currentState){
@@ -178,6 +199,14 @@ public class AppController {
                 }
 
             }
+
+            case "move" ->{
+                switch (currentState){
+                    case READY -> {
+                        currentState = State.DRAGGING;
+                    }
+                }
+            }
         }
     }
 
@@ -194,7 +223,7 @@ public class AppController {
             case PREPARE_CREATE -> {
                 switch (iModel.getSelectedCursor()){
                     case "pointer" -> {
-                        iModel.setSelectedItem(model.addItem(prevX, prevY, 110.0, 60.0, "Node"));
+                        iModel.setSelectedItem(model.addItem(prevX, prevY, 0.09, 0.05, "Node"));
                         currentState = State.READY;
                     }
                     case "link" -> {
@@ -233,10 +262,10 @@ public class AppController {
                             // Setting coordinates of transition node
                             if(transitionLink.getStartNode() == transitionLink.getEndNode()){
                                 if(prevX <  normX){
-                                    transitionLink.transitionNodeX = startNode.getX() + 240;
+                                    transitionLink.transitionNodeX = startNode.getX() + .16;
                                 }
                                 else {
-                                    transitionLink.transitionNodeX = startNode.getX() - 240;
+                                    transitionLink.transitionNodeX = startNode.getX() - .16;
                                 }
                                 transitionLink.transitionNodeY = startNode.getY();
                             }
@@ -248,10 +277,6 @@ public class AppController {
 
                             transitionLink.getStartNode().addLink(transitionLink);
                             transitionLink.getEndNode().addLink(transitionLink);
-
-                            model.setZOrdering(transitionLink.getStartNode());
-                            model.setZOrdering(transitionLink.getEndNode());
-
 
 
                             //Made a method that notifies subscribers so the arrow is drawn on the final
@@ -283,13 +308,6 @@ public class AppController {
      * @param event mouse event
      */
     public void handleDragged(double normX, double normY, MouseEvent event) {
-        // handle view panning
-//        if (event.isSecondaryButtonDown()) {
-//            double newX = event.getX()/1600;
-//            double newY = event.getY()/1600;
-//            model.pan(iModel.viewPort, newX, newY, noOffsetX, noOffsetY);
-//        }
-
 
         switch (currentState) {
             case PREPARE_CREATE -> {
@@ -352,6 +370,14 @@ public class AppController {
                         if(transitionLink != null){
                             model.resizeTransitionLinkEnd(transitionLink, normX, normY);
                         }
+                    }
+
+                    case "move" -> {
+                        // handle view panning
+
+                        double newX = event.getX()/1600;
+                        double newY = event.getY()/1600;
+                        model.pan(iModel.viewPort, newX, newY, noOffsetX, noOffsetY);
                     }
                 }
 

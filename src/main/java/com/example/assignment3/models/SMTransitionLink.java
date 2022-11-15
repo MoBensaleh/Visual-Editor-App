@@ -105,7 +105,7 @@ public class SMTransitionLink extends SMItem{
 
     @Override
     public boolean contains(double mouseX, double mouseY) {
-        return mouseX >= transitionNodeX-(60) && mouseX <= transitionNodeX+(60) && mouseY >= transitionNodeY-(60) && mouseY <= transitionNodeY+(60);
+        return mouseX >= transitionNodeX-(0.05) && mouseX <= transitionNodeX+(0.05) && mouseY >= transitionNodeY-(0.05) && mouseY <= transitionNodeY+(0.05);
     }
 
     /**

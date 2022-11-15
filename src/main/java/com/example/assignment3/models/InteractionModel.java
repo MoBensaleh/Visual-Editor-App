@@ -12,12 +12,14 @@ public class InteractionModel {
     private String selectedCursor;
     private SMItem selectedItem;
     private String currentPropertiesView;
+    public ViewPort viewPort;
 
     /**
      * Constructor for InteractionModel
      */
     public InteractionModel() {
         subs = new ArrayList<>();
+        viewPort = new ViewPort(0, 0, 0.25, 0.25);
     }
 
     /**

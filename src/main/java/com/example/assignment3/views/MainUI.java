@@ -3,10 +3,11 @@ package com.example.assignment3.views;
 import com.example.assignment3.controllers.AppController;
 import com.example.assignment3.models.IModelSubscriber;
 import com.example.assignment3.models.InteractionModel;
-import com.example.assignment3.models.ModelSubscriber;
 import com.example.assignment3.models.SMModel;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
+import javafx.scene.ImageCursor;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -14,12 +15,13 @@ import javafx.scene.layout.StackPane;
  * A view that contains and lays out the tool palette,
  * the diagram view, node properties view, and the link properties view.
  */
-public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscriber {
+public class MainUI extends BorderPane implements IModelSubscriber {
     private ToolPalette toolPalette;
     private DiagramView diagramView;
     private NodePropertiesView nodePropertiesView;
     private LinkPropertiesView linkPropertiesView;
     private StackPane propertiesView;
+    private MiniDiagramView miniDiagramView;
     private SMModel model;
     private InteractionModel iModel;
 
@@ -29,25 +31,31 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         diagramView = new DiagramView(1600, 1600);
         nodePropertiesView = new NodePropertiesView();
         linkPropertiesView = new LinkPropertiesView();
+        miniDiagramView = new MiniDiagramView(1600, 1600);
+        miniDiagramView.setMouseTransparent(true);
+
+        StackPane diagramViews = new StackPane(diagramView, miniDiagramView);
+        StackPane.setAlignment(miniDiagramView, Pos.TOP_LEFT);
 
         // Setting initial properties view
         propertiesView = nodePropertiesView;
 
         diagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-propertiesView.getWidth());
+        miniDiagramView.setMinWidth(this.getWidth()-toolPalette.getWidth()-propertiesView.getWidth());
 
         this.setLeft(toolPalette);
-        this.setCenter(diagramView);
+        this.setCenter(diagramViews);
         this.setRight(propertiesView);
 
         // make the canvas view resize based on the main application
         this.widthProperty().addListener((observable, oldValue, newValue) -> {
-            diagramView.setMaxWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
-            diagramView.setPrefWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
+            diagramViews.setMaxWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
+            diagramViews.setPrefWidth(newValue.doubleValue()-toolPalette.getWidth()-nodePropertiesView.getWidth());
 
         });
         this.heightProperty().addListener((observable, oldValue, newValue) -> {
-            diagramView.setMaxHeight(newValue.doubleValue());
-            diagramView.setPrefHeight(newValue.doubleValue());
+            diagramViews.setMaxHeight(newValue.doubleValue());
+            diagramViews.setPrefHeight(newValue.doubleValue());
         });
         this.setPrefSize(1150, 800);
     }
@@ -62,10 +70,12 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         diagramView.setInteractionModel(newIModel);
         nodePropertiesView.setInteractionModel(newIModel);
         linkPropertiesView.setInteractionModel(newIModel);
+        miniDiagramView.setInteractionModel(newIModel);
         iModel.addSub(toolPalette);
         iModel.addSub(diagramView);
         iModel.addSub(nodePropertiesView);
         iModel.addSub(linkPropertiesView);
+        iModel.addSub(miniDiagramView);
     }
 
     /**
@@ -75,7 +85,9 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
     public void setModel(SMModel newModel) {
         model = newModel;
         diagramView.setModel(newModel);
+        miniDiagramView.setModel(newModel);
         model.addSub(diagramView);
+        model.addSub(miniDiagramView);
     }
     /**
      * Set a controller for the view
@@ -86,10 +98,6 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
         diagramView.setController(newController);
         nodePropertiesView.setController(newController);
         linkPropertiesView.setController(newController);
-    }
-
-
-    public void modelChanged() {
 
     }
 
@@ -103,7 +111,8 @@ public class MainUI extends BorderPane implements ModelSubscriber, IModelSubscri
                 this.getScene().setCursor(Cursor.CROSSHAIR);
             }
             case "move" -> {
-                this.getScene().setCursor(Cursor.MOVE);
+                Image moveCursor = new Image(this.getClass().getResourceAsStream("/assets/move.png"), 20, 20, false, false);
+                this.getScene().setCursor(new ImageCursor(moveCursor));
             }
         }
         System.out.println(iModel.getCurrentPropertiesViewId());

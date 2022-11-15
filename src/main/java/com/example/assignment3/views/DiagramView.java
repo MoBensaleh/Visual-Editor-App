@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
@@ -24,7 +25,7 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
     protected double docWidth, docHeight;
 
     /**
-     * Constructor for DrawingView
+     * Constructor for DiagramView
      */
     public DiagramView(double newDocWidth, double newDocHeight) {
         myCanvas = new Canvas(800,800);
@@ -41,6 +42,8 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
     public void draw() {
         double width = docWidth;
         double height = docHeight;
+        double xOffset = iModel.viewPort.x * width;
+        double yOffset = iModel.viewPort.y * height;
         gc.clearRect(0, 0, width, height);
         gc.setLineWidth(2.0);
 
@@ -54,53 +57,53 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
                     gc.setStroke(Color.RED);
                 }
 
-                gc.fillRect(item.x-(item.width/2), item.y-(item.height/2),
-                        item.width, item.height);
-                gc.strokeRect(item.x-(item.width/2), item.y-(item.height/2),
-                        item.width, item.height);
+                gc.fillRect(((item.x-(item.width/2)) * width - xOffset), ((item.y-(item.height/2)) * height - yOffset),
+                        item.width*width, item.height*height);
+                gc.strokeRect(((item.x-(item.width/2)) * width - xOffset), ((item.y-(item.height/2)) * height - yOffset),
+                        item.width*width, item.height*height);
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
                 gc.setFill(Color.BLACK);
-                gc.fillText(stateNode.getState(), item.x, item.y);
+                gc.fillText(stateNode.getState(), item.x * width - xOffset, item.y * height - yOffset);
 
 
             }
             if(item instanceof SMTransitionLink){
                 if(((SMTransitionLink) item).getFinal()){
-                    //Check if the transition node is selected:
-                    if(item.equals(iModel.getSelectedItem())) {
-                        gc.setStroke(Color.BLACK);
-                        drawTransition(gc, (SMTransitionLink) item, true);
-                    }
-                    else{
-                        gc.setStroke(Color.BLACK);
-                        drawTransition(gc, (SMTransitionLink) item, false);
-
-                    }
+                    gc.setStroke(Color.BLACK);
+                    drawTransition(gc, (SMTransitionLink) item, item.equals(iModel.getSelectedItem()), width, height, xOffset, yOffset, false);
                 }
                 //If it's a temporary link
                 else {
                     gc.setStroke(Color.BLACK);
-                    gc.strokeLine(item.x, item.y, item.width, item.height);
+                    gc.strokeLine(((item.x) * width - xOffset), ((item.y) * height - yOffset),
+                            item.width*width, item.height*height);
                 }
             }
         }
     }
 
-    private void drawArrow(GraphicsContext gc, double x1, double y1, double x2, double y2, double width, double height){
+    private void drawArrow(GraphicsContext gc, double x1, double y1, double x2, double y2,
+                           double nodeWidth, double nodeHeight, double width, double height, double xOffset, double yOffset,
+                           Boolean isMiniatureTransition){
         double dx = x2 - x1, dy = y2 - y1;
         double arrowAngle = Math.atan2(dy, dx);
         int length = (int) Math.sqrt(dx * dx + dy * dy);
 
         gc.setFill(Color.BLACK);
-        Pair<Double, Double> nodeEdgeCoordinates = getDistanceFromCenter(arrowAngle, width, height);
-        Transform arrowTransform = Transform.translate(x1 - nodeEdgeCoordinates.getKey(), y1 - nodeEdgeCoordinates.getValue());
+        if(isMiniatureTransition){
+            gc.setFill(Color.rgb(0,0,0,0.3));
+
+        }
+        Pair<Double, Double> nodeEdgeCoordinates = getDistanceFromCenter(arrowAngle, nodeWidth*width, nodeHeight*height);
+        Transform arrowTransform = Transform.translate(x1 - nodeEdgeCoordinates.getKey(), (y1 - nodeEdgeCoordinates.getValue()));
         arrowTransform = arrowTransform.createConcatenation(Transform.rotate(Math.toDegrees(arrowAngle), 0, 0));
 
         gc.setTransform(new Affine(arrowTransform));
 
         //Draw the triangle
-        gc.fillPolygon(new double[]{length, length - 15, length - 15}, new double[]{0, -6, 6},
+        gc.fillPolygon(new double[]{(length), length-15, length-15},
+                new double[]{0, -6, 6},
                 3);
 
         //Now we reset the graphics context's transform so it doesn't mess up future drawings
@@ -108,55 +111,73 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
     }
 
 
-    private void drawTransition(GraphicsContext gc, SMTransitionLink link, boolean isSelected){
+    protected void drawTransition(GraphicsContext gc, SMTransitionLink link, boolean isSelected, double width, double height, double xOffset, double yOffset, Boolean isMiniatureTransition ){
 
         // Ensuring when transition node is selected, first transition link isn't shown on top of state node due to z-ordering
         double startDX = link.transitionNodeX - link.x, startDY = link.transitionNodeY - link.y;
         double startArrowAngle = Math.atan2(startDY, startDX);
-        Pair<Double, Double> startNodeEdgeCoordinates = getDistanceFromCenter(startArrowAngle, 110, 60);
-        gc.strokeLine(link.x+startNodeEdgeCoordinates.getKey(), link.y+startNodeEdgeCoordinates.getValue(), link.transitionNodeX, link.transitionNodeY);
+        Pair<Double, Double> startNodeEdgeCoordinates = getDistanceFromCenter(startArrowAngle, 0.09, 0.05);
+        gc.strokeLine((link.x+startNodeEdgeCoordinates.getKey())*width-xOffset,
+                (link.y+startNodeEdgeCoordinates.getValue())*height-yOffset, link.transitionNodeX*width-xOffset, link.transitionNodeY*height-yOffset);
 
         // For self-links
         if(link.getStartNode() == link.getEndNode()){
-            drawSelfLink(gc, link, startArrowAngle, startNodeEdgeCoordinates.getKey(), startNodeEdgeCoordinates.getValue());
+            drawSelfLink(gc, link, startArrowAngle, startNodeEdgeCoordinates.getKey(), startNodeEdgeCoordinates.getValue(), width, height, xOffset, yOffset);
         }
 
         // Ensuring when transition node is selected, second transition link isn't shown on top of state node due to z-ordering
         double endDX = link.width - link.transitionNodeX, endDY = link.height - link.transitionNodeY;
         double endArrowAngle = Math.atan2(endDY, endDX);
-        Pair<Double, Double> endNodeEdgeCoordinates = getDistanceFromCenter(endArrowAngle, 110, 60);
-        gc.strokeLine(link.transitionNodeX, link.transitionNodeY, link.width-endNodeEdgeCoordinates.getKey(), link.height-endNodeEdgeCoordinates.getValue());
+        Pair<Double, Double> endNodeEdgeCoordinates = getDistanceFromCenter(endArrowAngle, 0.09, 0.05);
+        gc.strokeLine(link.transitionNodeX*width-xOffset, link.transitionNodeY*height-yOffset, (link.width-endNodeEdgeCoordinates.getKey())*width-xOffset, (link.height-endNodeEdgeCoordinates.getValue())*height-yOffset);
 
 
         // Drawing arrows
-        drawArrow(gc, link.x,link.y,  link.transitionNodeX, link.transitionNodeY, 120.0, 120.0);
-        drawArrow(gc, link.transitionNodeX, link.transitionNodeY, link.width, link.height, 110.0, 60.0);
+        drawArrow(gc, link.x*width-xOffset,link.y*height-yOffset, link.transitionNodeX*width-xOffset, link.transitionNodeY*height-yOffset, 0.1, 0.1, width,height,xOffset,yOffset, isMiniatureTransition);
+        drawArrow(gc, link.transitionNodeX*width-xOffset, link.transitionNodeY*height-yOffset, link.width*width-xOffset, link.height*height-yOffset, 0.09, 0.05, width,height,xOffset,yOffset, isMiniatureTransition);
 
-        gc.setStroke(Color.BLACK);
-        //If it's selected
-        if(isSelected){
-            gc.setStroke(Color.RED);
+        if(!isMiniatureTransition){
+            gc.setStroke(Color.BLACK);
+            //If it's selected
+            if(isSelected){
+                gc.setStroke(Color.RED);
+            }
+            gc.setFill(Color.rgb(255, 255, 224));
         }
 
-        gc.setFill(Color.rgb(255, 255, 224));
+        else{
+            gc.setStroke(Color.rgb(0,0,0,0.3));
+            //If it's selected
+            if(isSelected){
+                gc.setStroke(Color.rgb(227,10,10, 0.3));
+            }
+            gc.setFill(Color.rgb(255, 255, 224,0.3));
+        }
 
-        gc.fillRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
+        gc.fillRect((link.transitionNodeX-0.05)*width-xOffset, (link.transitionNodeY-0.05)*height-yOffset, 0.1*width, 0.1*height);
         gc.setFill(Color.BLACK);
+        if (isMiniatureTransition) {
+            gc.setFill(Color.rgb(0,0,0,0.3));
+        }
         gc.setTextAlign(TextAlignment.LEFT);
-        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(), link.transitionNodeX-50, link.transitionNodeY);
-        gc.strokeRect(link.transitionNodeX-60, link.transitionNodeY-60, 120, 120);
+        if(isMiniatureTransition){
+            gc.setFont(Font.font(8));
+        }
+        gc.fillText(" -Event:\n "+link.getEvent() + "\n -Context:\n " + link.getContext() + "\n -Side Effects:\n " + link.getSideEffects(),
+                (link.transitionNodeX-0.04)*width-xOffset, link.transitionNodeY*height-yOffset);
+        gc.strokeRect((link.transitionNodeX-0.05)*width-xOffset, (link.transitionNodeY-0.05)*height-yOffset, 0.1*width, 0.1*height);
 
     }
-    private void drawSelfLink(GraphicsContext gc, SMTransitionLink link, double angle, double startOffsetX, double startOffsetY){
-        Pair<Double, Double> transitionNodeEdgeCoords = getDistanceFromCenter(angle, 120, 120);
+    private void drawSelfLink(GraphicsContext gc, SMTransitionLink link, double angle, double startOffsetX, double startOffsetY, double width, double height, double xOffset, double yOffset){
+        Pair<Double, Double> transitionNodeEdgeCoords = getDistanceFromCenter(angle, 0.1, 0.1);
 
         double dx = (link.transitionNodeX-transitionNodeEdgeCoords.getKey()) - (link.x + startOffsetX);
         double dy = (link.transitionNodeY-transitionNodeEdgeCoords.getValue()) - (link.y + startOffsetY);
         double length = Math.sqrt(dx * dx + dy * dy);
 
-        gc.strokeOval(((((link.x + startOffsetX) + ((link.transitionNodeX-transitionNodeEdgeCoords.getKey())))/2)-(length/2)),
-                ((((link.y+ startOffsetY)+(link.transitionNodeY-transitionNodeEdgeCoords.getValue()))/2)- (length/2)),
-                length, length);
+        gc.strokeOval(((((link.x + startOffsetX) + ((link.transitionNodeX-transitionNodeEdgeCoords.getKey())))/2)-(length/2))*width-xOffset,
+                ((((link.y+ startOffsetY)+(link.transitionNodeY-transitionNodeEdgeCoords.getValue()))/2)- (length/2))*height-yOffset,
+                length*width, length*height);
     }
     private Pair<Double, Double> getDistanceFromCenter(double arrowAngle, double width, double height){
         double c = Math.cos(arrowAngle);
@@ -199,23 +220,31 @@ public class DiagramView extends StackPane implements ModelSubscriber, IModelSub
         // re-draw canvas when application is resized
         this.widthProperty().addListener((observable, oldVal, newVal) -> {
             myCanvas.setWidth(newVal.doubleValue());
+            newController.setViewPortWidth(newVal.doubleValue()/docWidth);
             draw();
         });
         this.heightProperty().addListener((observable, oldVal, newVal) -> {
             myCanvas.setHeight(newVal.doubleValue());
+            newController.setViewPortHeight(newVal.doubleValue()/docHeight);
             draw();
         });
         // event handlers for interaction on canvas
         double width = docWidth;
         double height = docHeight;
         myCanvas.setOnMousePressed(e -> {
-            newController.handlePressed((e.getX()), (e.getY()), e);
+            double xOffset = iModel.viewPort.x * width;
+            double yOffset = iModel.viewPort.y * width;
+            newController.handlePressed((e.getX()+xOffset)/width, (e.getY()+yOffset)/height, e);
         });
         myCanvas.setOnMouseReleased(e -> {
-            newController.handleReleased((e.getX()), (e.getY()), e);
+            double xOffset = iModel.viewPort.x * width;
+            double yOffset = iModel.viewPort.y * width;
+            newController.handleReleased((e.getX()+xOffset)/width, (e.getY()+yOffset)/height, e);
         });
         myCanvas.setOnMouseDragged(e -> {
-            newController.handleDragged((e.getX()), (e.getY()), e);
+            double xOffset = iModel.viewPort.x * width;
+            double yOffset = iModel.viewPort.y * width;
+            newController.handleDragged((e.getX()+xOffset)/width, (e.getY()+yOffset)/height, e);
         });
     }
 

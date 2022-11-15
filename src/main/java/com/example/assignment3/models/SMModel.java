@@ -182,10 +182,10 @@ public class SMModel {
      * @param normX x location of viewport
      * @param normY y location of viewport
      */
-//    public void moveViewPort(ViewPort viewPort, double normX, double normY) {
-//        viewPort.move(normX, normY);
-//        notifySubscribers();
-//    }
+    public void moveViewPort(ViewPort viewPort, double normX, double normY) {
+        viewPort.move(normX, normY);
+        notifySubscribers();
+    }
 
     /**
      * Move the viewport based on panning in the main view
@@ -195,8 +195,8 @@ public class SMModel {
      * @param prevX the original mouse press X location
      * @param prevY the original mouse press Y location
      */
-//    public void pan(ViewPort viewPort, double newX, double newY, double prevX, double prevY) {
-//        viewPort.pan(newX, newY, prevX, prevY);
-//        notifySubscribers();
-//    }
+    public void pan(ViewPort viewPort, double newX, double newY, double prevX, double prevY) {
+        viewPort.pan(newX, newY, prevX, prevY);
+        notifySubscribers();
+    }
 }
