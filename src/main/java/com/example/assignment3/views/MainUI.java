@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -56,6 +57,13 @@ public class MainUI extends BorderPane implements IModelSubscriber {
         this.heightProperty().addListener((observable, oldValue, newValue) -> {
             diagramViews.setMaxHeight(newValue.doubleValue());
             diagramViews.setPrefHeight(newValue.doubleValue());
+        });
+
+        // Setting focus back to diagram view when enter key is pressed (or when properties are updated in properties views)
+        this.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                diagramView.requestFocus();
+            }
         });
         this.setPrefSize(1150, 800);
     }

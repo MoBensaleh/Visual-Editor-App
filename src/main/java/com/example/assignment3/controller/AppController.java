@@ -97,10 +97,12 @@ public class AppController {
      * @param sideEffects side effects property
      */
     public void handleUpdateLinkProperties(SMTransitionLink link, String event, String context, String sideEffects){
-        link.setEvent(event);
-        link.setContext(context);
-        link.setSideEffects(sideEffects);
-        iModel.notifySubscribers();
+        if(iModel.getSelectedItem() != null){
+            link.setEvent(event);
+            link.setContext(context);
+            link.setSideEffects(sideEffects);
+            iModel.notifySubscribers();
+        }
     }
 
     /**
@@ -109,8 +111,11 @@ public class AppController {
      * @param state state property
      */
     public void handleUpdateNodeProperties(SMStateNode node, String state){
-        node.setState(state);
-        iModel.notifySubscribers();
+        if(iModel.getSelectedItem() != null){
+            node.setState(state);
+
+            iModel.notifySubscribers();
+        }
     }
 
     /**
