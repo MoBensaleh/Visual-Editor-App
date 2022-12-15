@@ -1,4 +1,4 @@
-# VisualEditorApp
+# Visual Editor Application
 A JavaFX project interactive editor for building state-machine diagrams. The editor allows users to create state nodes, connect them with transition links, move and edit items in the workspace, and pan the view. The system also includes a tool palette and a property panel for editing details about the state nodes and transition links. 
 The editor is built using immediate-mode graphics and has a complex model-view-controller architecture. The system also includes the ability to display multiple synchronized views of the same state-machine diagram.
 
