@@ -3,13 +3,13 @@ module com.example.sideviewdemo {
     requires javafx.fxml;
 
 
-    opens com.example.assignment3 to javafx.fxml;
-    exports com.example.assignment3.controller;
-    opens com.example.assignment3.controller to javafx.fxml;
-    exports com.example.assignment3.application;
-    opens com.example.assignment3.application to javafx.fxml;
-    exports com.example.assignment3.models;
-    opens com.example.assignment3.models to javafx.fxml;
-    exports com.example.assignment3.views;
-    opens com.example.assignment3.views to javafx.fxml;
+    opens com.example.visualeditor to javafx.fxml;
+    exports com.example.visualeditor.controller;
+    opens com.example.visualeditor.controller to javafx.fxml;
+    exports com.example.visualeditor.application;
+    opens com.example.visualeditor.application to javafx.fxml;
+    exports com.example.visualeditor.models;
+    opens com.example.visualeditor.models to javafx.fxml;
+    exports com.example.visualeditor.views;
+    opens com.example.visualeditor.views to javafx.fxml;
 }

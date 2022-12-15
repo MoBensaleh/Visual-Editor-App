@@ -1,4 +1,4 @@
-package com.example.assignment3.models;
+package com.example.visualeditor.models;
 
 import java.util.Objects;
 

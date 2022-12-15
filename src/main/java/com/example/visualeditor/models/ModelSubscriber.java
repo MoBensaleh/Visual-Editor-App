@@ -1,4 +1,4 @@
-package com.example.assignment3.models;
+package com.example.visualeditor.models;
 
 /**
  * An interface used for drawing model subscribers.

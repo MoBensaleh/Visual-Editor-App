@@ -1,9 +1,9 @@
-package com.example.assignment3.views;
+package com.example.visualeditor.views;
 
-import com.example.assignment3.models.ModelSubscriber;
-import com.example.assignment3.models.SMItem;
-import com.example.assignment3.models.SMStateNode;
-import com.example.assignment3.models.SMTransitionLink;
+import com.example.visualeditor.models.ModelSubscriber;
+import com.example.visualeditor.models.SMItem;
+import com.example.visualeditor.models.SMStateNode;
+import com.example.visualeditor.models.SMTransitionLink;
 import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;

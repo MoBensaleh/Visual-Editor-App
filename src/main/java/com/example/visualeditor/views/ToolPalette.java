@@ -1,9 +1,9 @@
-package com.example.assignment3.views;
+package com.example.visualeditor.views;
 
-import com.example.assignment3.controller.AppController;
-import com.example.assignment3.models.IModelSubscriber;
-import com.example.assignment3.models.InteractionModel;
-import com.example.assignment3.models.SMModel;
+import com.example.visualeditor.controller.AppController;
+import com.example.visualeditor.models.IModelSubscriber;
+import com.example.visualeditor.models.InteractionModel;
+import com.example.visualeditor.models.SMModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ToggleButton;

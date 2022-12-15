@@ -1,6 +1,6 @@
-package com.example.assignment3.controller;
+package com.example.visualeditor.controller;
 
-import com.example.assignment3.models.*;
+import com.example.visualeditor.models.*;
 import javafx.scene.input.MouseEvent;
 
 /**

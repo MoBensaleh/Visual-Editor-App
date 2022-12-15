@@ -1,4 +1,4 @@
-package com.example.assignment3.models;
+package com.example.visualeditor.models;
 public abstract class SMItem {
     public double x, y, width, height, initialX, initialY;
     private String itemId;

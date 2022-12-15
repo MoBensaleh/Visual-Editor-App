@@ -1,9 +1,9 @@
-package com.example.assignment3.application;
+package com.example.visualeditor.application;
 
-import com.example.assignment3.controller.AppController;
-import com.example.assignment3.models.InteractionModel;
-import com.example.assignment3.models.SMModel;
-import com.example.assignment3.views.MainUI;
+import com.example.visualeditor.controller.AppController;
+import com.example.visualeditor.models.InteractionModel;
+import com.example.visualeditor.models.SMModel;
+import com.example.visualeditor.views.MainUI;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
